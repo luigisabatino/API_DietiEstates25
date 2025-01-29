@@ -20,7 +20,7 @@ public class UserModel {
     }
 
     public boolean existUserInDB(JdbcTemplate jdbcTemplate) {
-        String query = "SELECT COUNT(*) FROM utente WHERE email = ? AND pwd = ?";
+        String query = "SELECT COUNT(*) FROM standard_user WHERE email = ? AND pwd = ?";
         return ( (jdbcTemplate.queryForObject(query, Integer.class, email, pwd)) > 0);
 
     }

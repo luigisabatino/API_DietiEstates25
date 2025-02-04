@@ -1,5 +1,7 @@
 package com.api.dietiestates25.controller;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.api.dietiestates25.model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,23 +13,38 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 public class UserController {
+
     private final JdbcTemplate jdbcTemplate;
-    @Autowired
+
     public UserController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody com.api.dietiestates25.model.UserModel user) {
+    public ResponseEntity<UserModel.LoginResponseModel> login(@RequestBody com.api.dietiestates25.model.UserModel user) {
         try {
-            if (user.existUserInDB(jdbcTemplate))
-                return ResponseEntity.ok("Login OK!");
-            else
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data with this email/pwd combination.");
+            var loginResponse = user.login(jdbcTemplate);
+            return (loginResponse.getSessionid()!=null) ? ResponseEntity.ok(loginResponse) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(loginResponse);
+            }
+        catch(Exception ex)
+        {
+            var exFormat = new UserModel.LoginResponseModel();
+            exFormat.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exFormat);
+        }
+    }
+
+    @PostMapping("/createUser")
+    public ResponseEntity<Integer> createUser(@RequestBody com.api.dietiestates25.model.UserModel user) {
+        try {
+            return ResponseEntity.ok(user.create_user(jdbcTemplate));
         }
         catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            var exFormat = new UserModel.LoginResponseModel();
+            exFormat.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         }
     }
+
 }

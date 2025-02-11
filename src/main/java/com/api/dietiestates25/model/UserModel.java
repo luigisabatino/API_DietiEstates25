@@ -1,10 +1,10 @@
 package com.api.dietiestates25.model;
 
+import com.api.dietiestates25.model.response.SessionResponse;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class UserModel {
     public void setEmail(String _email) { email = _email; }
 
     public String getPwd() { return pwd; }
-    public void setPwd(String _pwd) { pwd = _pwd; }
+    public void setPwd(String _pwd) {pwd = _pwd;}
 
     public String getFirstName(){return firstName;}
     public void setFirstName(String _firstname){firstName = _firstname;}
@@ -36,18 +36,23 @@ public class UserModel {
 
     public String getOtp(){return otp;}
     public void setOtp(String _otp){otp=_otp;}
+    public void setOtp(){
+        SecureRandom random = new SecureRandom();
+        int _otp = 100000 + random.nextInt(900000);
+        otp = String.valueOf(_otp);
+    };
 
-    public LoginResponseModel login(JdbcTemplate jdbcTemplate) {
-        var response = new LoginResponseModel();
+    public SessionResponse login(JdbcTemplate jdbcTemplate) {
+        var response = new SessionResponse();
         String pwdInDB = checkPwd(jdbcTemplate);
         if(pwdInDB == null) {
             response.setMessage("Error: not valid credentials");
             return response;
         }
         String query = "SELECT * FROM LOGIN(?, ?)";
-        return jdbcTemplate.queryForObject(query, new RowMapper<LoginResponseModel>() {
+        return jdbcTemplate.queryForObject(query, new RowMapper<SessionResponse>() {
             @Override
-            public LoginResponseModel mapRow(ResultSet rs, int rowNum) throws SQLException {
+            public SessionResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
                 response.setSessionid(rs.getString("session_id"));
                 response.setMessage(rs.getString("message"));
                 return response;
@@ -73,20 +78,11 @@ public class UserModel {
 
     public int createUser(JdbcTemplate jdbcTemplate) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        setPwd(encoder.encode(pwd));
-        int otp = generateOTP();
+        pwd = encoder.encode(pwd);
         String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?,?,?)";
         int returnCode = (jdbcTemplate.queryForObject(query, Integer.class,
                 email, pwd,((company==null) ? "U":"A"),firstName,lastName,company,String.valueOf(otp)));
-        if(returnCode == 0)
-            return otp;
         return returnCode;
-    }
-
-    private int generateOTP() {
-        SecureRandom random = new SecureRandom();
-        int otp = 100000 + random.nextInt(900000);
-        return otp;
     }
 
     public Integer confirmUser(JdbcTemplate jdbcTemplate) {

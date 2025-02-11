@@ -1,10 +1,10 @@
-package com.api.dietiestates25.model;
+package com.api.dietiestates25.model.response;
 
-public class LoginResponseModel {
+public class SessionResponse {
     private String sessionid;
     private String message;
 
-    public LoginResponseModel() { }
+    public SessionResponse() { }
 
     public String getSessionid() { return sessionid; }
     public void setSessionid(String _sessionid) { sessionid = _sessionid; }

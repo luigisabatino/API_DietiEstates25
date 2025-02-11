@@ -1,6 +1,6 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.LoginResponseModel;
+import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<LoginResponseModel> login(String email, String pwd) {
+    public ResponseEntity<SessionResponse> login(String email, String pwd) {
         try {
             UserModel user = new UserModel();
             user.setEmail(email);
@@ -35,7 +35,7 @@ public class UserController {
             }
         catch(Exception ex)
         {
-            var exFormat = new LoginResponseModel();
+            var exFormat = new SessionResponse();
             exFormat.setMessage(ex.toString());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exFormat);
         }
@@ -44,10 +44,11 @@ public class UserController {
     @PostMapping("/createUser")
     public ResponseEntity<String> createUser(@RequestBody UserModel user) {
         try {
+            user.setOtp();
             int responseCode = user.createUser(jdbcTemplate);
-            if(responseCode < 10)
+            if(responseCode != 0)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account already exist in our systems");
-            emailService.sendEmail(user.getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account:\n\n" + responseCode + "\n\nThanks.");
+            emailService.sendEmail(user.getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account:\n\n" + user.getOtp() + "\n\nThanks.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account Created.");
         }
         catch(Exception ex)
@@ -69,6 +70,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.toString());
         }
     }
-
 
 }

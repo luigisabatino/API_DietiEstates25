@@ -36,35 +36,40 @@ public class UserModel {
     public void setOtp(String _otp){otp=_otp;}
 
     public LoginResponseModel login(JdbcTemplate jdbcTemplate) {
-        String query = "SELECT PWD FROM USERS WHERE email = ?";
-        String pwdInDB = "";
-        try {
-            pwdInDB = jdbcTemplate.queryForObject(query, String.class, email);
-        } catch (EmptyResultDataAccessException e) {
-            var response = new LoginResponseModel();
+        var response = new LoginResponseModel();
+        String pwdInDB = checkPwd(jdbcTemplate);
+        if(pwdInDB == null) {
             response.setMessage("Error: not valid credentials");
             return response;
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(!encoder.matches(this.pwd,pwdInDB))
-        {
-            var response = new LoginResponseModel();
-            response.setMessage("Error: not valid credentials");
-            return response;
-        }
-        query = "SELECT * FROM LOGIN(?, ?)";
+        String query = "SELECT * FROM LOGIN(?, ?)";
         return jdbcTemplate.queryForObject(query, new RowMapper<LoginResponseModel>() {
             @Override
             public LoginResponseModel mapRow(ResultSet rs, int rowNum) throws SQLException {
-                LoginResponseModel response = new LoginResponseModel();
-                response.setSessionid(rs.getString("session_id")); // Nome colonna
-                response.setMessage(rs.getString("message")); // Nome colonna
+                response.setSessionid(rs.getString("session_id"));
+                response.setMessage(rs.getString("message"));
                 return response;
             }
         }, email, pwdInDB);
     }
 
-    public Integer create_user(JdbcTemplate jdbcTemplate) {
+    private String checkPwd(JdbcTemplate jdbcTemplate) {
+        String pwdInDB = "";
+        try {
+            String query = "SELECT PWD FROM USERS WHERE email = ?";
+            pwdInDB = jdbcTemplate.queryForObject(query, String.class, email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(!encoder.matches(this.pwd,pwdInDB))
+        {
+            return null;
+        }
+        return pwdInDB;
+    }
+
+    public Integer createUser(JdbcTemplate jdbcTemplate) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));
         String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?,?,?)";
@@ -72,15 +77,4 @@ public class UserModel {
                 email, pwd,"U",firstName,lastName,null,"123456"));
     }
 
-    public static class LoginResponseModel {
-        private String sessionid;
-        private String message;
-
-        public LoginResponseModel() { }
-
-        public String getSessionid() { return sessionid; }
-        public void setSessionid(String _sessionid) { sessionid = _sessionid; }
-        public String getMessage() { return message; }
-        public void setMessage(String _message) { message = _message; }
-    }
 }

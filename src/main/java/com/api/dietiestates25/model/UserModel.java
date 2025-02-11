@@ -1,9 +1,11 @@
 package com.api.dietiestates25.model;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -69,12 +71,27 @@ public class UserModel {
         return pwdInDB;
     }
 
-    public Integer createUser(JdbcTemplate jdbcTemplate) {
+    public int createUser(JdbcTemplate jdbcTemplate) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));
+        int otp = generateOTP();
         String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?,?,?)";
-        return (jdbcTemplate.queryForObject(query, Integer.class,
-                email, pwd,"U",firstName,lastName,null,"123456"));
+        int returnCode = (jdbcTemplate.queryForObject(query, Integer.class,
+                email, pwd,((company==null) ? "U":"A"),firstName,lastName,company,String.valueOf(otp)));
+        if(returnCode == 0)
+            return otp;
+        return returnCode;
+    }
+
+    private int generateOTP() {
+        SecureRandom random = new SecureRandom();
+        int otp = 100000 + random.nextInt(900000);
+        return otp;
+    }
+
+    public Integer confirmUser(JdbcTemplate jdbcTemplate) {
+        String query = "SELECT * FROM CONFIRM_USER(?, ?)";
+        return (jdbcTemplate.queryForObject(query, Integer.class, email, otp));
     }
 
 }

@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -24,22 +21,25 @@ public class UserController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<SessionResponse> login(String email, String pwd) {
+    @PostMapping("/login")
+    public ResponseEntity<SessionResponse> login(@RequestBody UserModel user) {
         try {
-            UserModel user = new UserModel();
-            user.setEmail(email);
-            user.setPwd(pwd);
             var loginResponse = user.login(jdbcTemplate);
-            return (loginResponse.getSessionid()!=null) ? ResponseEntity.ok(loginResponse) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(loginResponse);
+
+            if (loginResponse.getSessionid() != null) {
+                return ResponseEntity.ok(loginResponse);
+            } else if (loginResponse.getMessage().contains("Invalid credentials.")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResponse);
             }
-        catch(Exception ex)
-        {
-            var exFormat = new SessionResponse();
-            exFormat.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exFormat);
+        } catch (Exception ex) {
+            var errorResponse = new SessionResponse();
+            errorResponse.setMessage("An error occurred during login.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
 
     @PostMapping("/createUser")
     public ResponseEntity<String> createUser(@RequestBody UserModel user) {
@@ -47,9 +47,13 @@ public class UserController {
             user.setOtp();
             int responseCode = user.createUser(jdbcTemplate);
             if(responseCode != 0)
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account already exist in our systems");
-            emailService.sendEmail(user.getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account:\n\n" + user.getOtp() + "\n\nThanks.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account Created.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already registered.");
+            emailService.sendEmail(
+                    user.getEmail(),
+                    "DietiEstates Account Verification",
+                    emailService.activationEmailFromTemplateBody(user.getFirstName(), user.getOtp())
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body("Account Created.");
         }
         catch(Exception ex)
         {
@@ -63,7 +67,7 @@ public class UserController {
             UserModel user = new UserModel();
             user.setEmail(email);
             user.setOtp(otp);
-            return ((user.confirmUser(jdbcTemplate) == 0) ? ResponseEntity.ok("User confermated") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Input not valid."));
+            return ((user.confirmUser(jdbcTemplate) == 0) ? ResponseEntity.ok("Account successfully created!") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid OTP code."));
         }
         catch(Exception ex)
         {

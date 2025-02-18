@@ -5,12 +5,18 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.SecureRandom;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
+@Getter
+@Setter
 @Component
 public class EmailService {
 
@@ -30,15 +36,6 @@ public class EmailService {
     private String subject;
     private String body;
 
-    private void setToAddress(String _toAddress){toAddress = _toAddress;}
-    private String getToAddress(){return toAddress;}
-
-    private void setSubject(String _subject) {subject = _subject;}
-    private String getSubject(){return subject;}
-
-    private void setBody(String _body){body = _body;}
-    private String getBody(){return body;}
-
     public void sendEmail(String _toAddress, String _subject, String _body) {
         toAddress = _toAddress;
         subject = _subject;
@@ -52,19 +49,31 @@ public class EmailService {
                 .withRegion(this.awsRegion)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
+
         SendEmailRequest request = new SendEmailRequest()
                 .withSource(fromAddress)
                 .withDestination(new Destination().withToAddresses(toAddress))
                 .withMessage(new Message()
                         .withSubject(new Content().withData(subject))
-                        .withBody(new Body().withText(new Content().withData(body))));
+                        .withBody(new Body()
+                                .withHtml(new Content().withData(body))
+                                .withText(new Content().withData("Please view this email in a web browser."))  // Se HTML fallisce
+                        ));
+
         client.sendEmail(request);
     }
 
     public void sendEmail(List<String> emails) {
         for (String email : emails) {
-            sendEmail(email,subject,body);
+            sendEmail(email, subject, body);
         }
+    }
+
+    public String activationEmailFromTemplateBody(String name, String otp) throws IOException {
+        return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/otp.html"))
+                .readAllBytes(), StandardCharsets.UTF_8)
+                .replace("${name}", name)
+                .replace("${otp}", otp);
     }
 
 }

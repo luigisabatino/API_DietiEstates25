@@ -1,6 +1,6 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.CompanyModel;
+import com.api.dietiestates25.service.CompanyService;
 import com.api.dietiestates25.model.request.InsertCompanyRequest;
 import com.api.dietiestates25.service.ApiLayerService;
 import com.api.dietiestates25.service.EmailService;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +35,8 @@ public class CompanyController {
             if(!apiLayerService.verifyVatNumber(request.getVatNumber()))
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: VAT Number not valid");
             request.manager.setOtp();
-            var response = request.insertCompany(jdbcTemplate);
+            var companyService = new CompanyService();
+            var response = companyService.insertCompany(jdbcTemplate, request);
             if(response.getCode() != 0 )
                 return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getMessage());
             emailService.sendEmail(request.manager.getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account and insert your company:\n\n" + request.manager.getOtp() + "\n\nThanks.");

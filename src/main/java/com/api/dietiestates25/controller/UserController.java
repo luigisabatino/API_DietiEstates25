@@ -3,6 +3,7 @@ package com.api.dietiestates25.controller;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.EmailService;
+import com.api.dietiestates25.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<SessionResponse> login(@RequestBody UserModel user) {
         try {
-            var loginResponse = user.login(jdbcTemplate);
+            var userService = new UserService();
+            var loginResponse = userService.login(jdbcTemplate, user);
 
             if (loginResponse.getSessionid() != null) {
                 return ResponseEntity.ok(loginResponse);
@@ -45,7 +47,8 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody UserModel user) {
         try {
             user.setOtp();
-            int responseCode = user.createUser(jdbcTemplate);
+            var userService = new UserService();
+            int responseCode = userService.createUser(jdbcTemplate, user);
             if(responseCode != 0)
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already registered.");
             emailService.sendEmail(
@@ -67,7 +70,8 @@ public class UserController {
             UserModel user = new UserModel();
             user.setEmail(email);
             user.setOtp(otp);
-            return ((user.confirmUser(jdbcTemplate) == 0) ? ResponseEntity.ok("Account successfully created!") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid OTP code."));
+            var userService = new UserService();
+            return ((userService.confirmUser(jdbcTemplate, user) == 0) ? ResponseEntity.ok("Account successfully created!") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid OTP code."));
         }
         catch(Exception ex)
         {

@@ -36,6 +36,7 @@ public class EmailService {
     private String subject;
     private String body;
 
+
     public void sendEmail(String _toAddress, String _subject, String _body) {
         toAddress = _toAddress;
         subject = _subject;

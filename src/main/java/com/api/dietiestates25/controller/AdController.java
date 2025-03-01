@@ -1,9 +1,8 @@
 package com.api.dietiestates25.controller;
 
+import com.api.dietiestates25.model.request.EntityRequest;
 import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.request.AdRequest;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.service.AdService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +22,11 @@ public class AdController {
 
 
     @PostMapping("/insertAd")
-    public ResponseEntity<CodeResponse> insertAd(@RequestBody AdRequest ad)
+    public ResponseEntity<CodeResponse> insertAd(@RequestBody EntityRequest<AdModel> adReq)
     {
         try {
             var adService = new AdService();
-            CodeResponse response = adService.insertAd(jdbcTemplate, ad);
+            CodeResponse response = adService.insertAd(jdbcTemplate, adReq);
             if(response.getCode() == 0)
                 return ResponseEntity.ok(response);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);

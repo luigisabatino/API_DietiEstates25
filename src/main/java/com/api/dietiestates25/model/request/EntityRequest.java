@@ -1,11 +1,11 @@
 package com.api.dietiestates25.model.request;
 
-import com.api.dietiestates25.model.AdModel;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AdRequest extends AdModel {
+public class EntityRequest<T> {
     private String sessionId;
+    private T entity;
 }

@@ -34,12 +34,12 @@ public class CompanyController {
         try {
             if(!apiLayerService.verifyVatNumber(request.getVatNumber()))
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: VAT Number not valid");
-            request.manager.setOtp();
+            request.getManager().setOtp();
             var companyService = new CompanyService();
             var response = companyService.insertCompany(jdbcTemplate, request);
             if(response.getCode() != 0 )
                 return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(response.getMessage());
-            emailService.sendEmail(request.manager.getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account and insert your company:\n\n" + request.manager.getOtp() + "\n\nThanks.");
+            emailService.sendEmail(request.getManager().getEmail(), "Confirm Account", "Hi,\nInsert this otp code in DietiEstates for activate your account and insert your company:\n\n" + request.getManager().getOtp() + "\n\nThanks.");
             return ResponseEntity.ok(response.getMessage());
         }
         catch(Exception ex)

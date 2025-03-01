@@ -22,11 +22,11 @@ public class BidController {
 
 
     @PostMapping("/insertBid")
-    public ResponseEntity<CodeResponse> insertAd(@RequestBody EntityRequest<BidModel> bidReq)
+    public ResponseEntity<CodeResponse> insertAd(@RequestHeader String sessionId, @RequestBody BidModel bid)
     {
         try {
             var bidService = new BidService();
-            CodeResponse response = bidService.insertBid(jdbcTemplate, bidReq);
+            CodeResponse response = bidService.insertBid(jdbcTemplate, sessionId, bid);
             if(response.getCode() == 0)
                 return ResponseEntity.ok(response);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);

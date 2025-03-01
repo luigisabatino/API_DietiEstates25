@@ -17,4 +17,26 @@ public class BidService {
                 : "Error: session not valid" ));
         return response;
     }
+
+    public CodeResponse cancelBid(JdbcTemplate jdbcTemplate, String sessionId, int bidId) {
+        String query = "SELECT * FROM CANCEL_BID(?, ?)";
+        var response = new CodeResponse();
+        response.setCode( (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId, bidId )));
+        response.setMessage(response.getCode() == 0 ? "Bid inserted with success"
+                : (response.getCode() == -1 ? "Error: session not valid"
+                : "Error: User cannot cancel this Bid" ));
+        return response;
+    }
+
+    public CodeResponse refuseBid(JdbcTemplate jdbcTemplate, String sessionId, int bidId) {
+        String query = "SELECT * FROM REFUSE_BID(?, ?)";
+        var response = new CodeResponse();
+        response.setCode( (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId, bidId )));
+        response.setMessage(response.getCode() == 0 ? "Bid inserted with success"
+                : (response.getCode() == -1 ? "Error: session not valid"
+                : "Error: User cannot refuse this Bid" ));
+        return response;
+    }
 }

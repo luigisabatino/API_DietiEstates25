@@ -13,8 +13,8 @@ public class AdService {
         response.setCode( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, ad.getPrice(), ad.getNation(), ad.getCounty(), ad.getCity(), ad.getZipcode(), ad.getAddress())) );
         response.setMessage(response.getCode() == 0 ? "Ad inserted with success"
-                : (response.getCode() == -1 ? "Error: User cannot insert an Ad"
-                : "Error: session not valid" ));
+                : (response.getCode() == -1 ? "Error: session not valid"
+                : "Error: User cannot insert an Ad" ));
         return response;
     }
 }

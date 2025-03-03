@@ -20,6 +20,16 @@ public class AdModel {
     private String zipcode;
     private String address;
     private String agent;
+    private int nRooms;
+    private int nBathrooms;
+    private int floor;
+    private boolean lift;
+    private String energyClass;
+    private String description;
+    private String type;
+    private String adType;
+    private int dimentions;
+    private String coordinates;
 
     public AdModel() { }
 

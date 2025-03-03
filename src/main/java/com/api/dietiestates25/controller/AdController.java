@@ -1,6 +1,5 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.request.EntityRequest;
 import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.AdService;
@@ -25,18 +24,17 @@ public class AdController {
     @PostMapping("/insertAd")
     public ResponseEntity<CodeResponse> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
     {
+        var response = new CodeResponse();
         try {
             var adService = new AdService();
-            CodeResponse response = adService.insertAd(jdbcTemplate, sessionId, ad);
-            if(response.getCode() == 0)
-                return ResponseEntity.ok(response);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
+            return response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            var errorResponse = new CodeResponse();
-            errorResponse.setMessage("An error occurred during insert ad.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            response.setCode(-99);
+            response.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

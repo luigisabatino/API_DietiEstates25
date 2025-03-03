@@ -1,5 +1,6 @@
 package com.api.dietiestates25.controller;
 
+import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.EmailService;
@@ -24,58 +25,72 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<SessionResponse> login(@RequestBody UserModel user) {
+        var loginResponse = new SessionResponse();
         try {
             var userService = new UserService();
-            var loginResponse = userService.login(jdbcTemplate, user);
-
-            if (loginResponse.getSessionid() != null) {
-                return ResponseEntity.ok(loginResponse);
-            } else if (loginResponse.getMessage().contains("Invalid credentials.")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResponse);
-            }
+            loginResponse = userService.login(jdbcTemplate, user);
+            return loginResponse.getFormattedResponse();
         } catch (Exception ex) {
-            var errorResponse = new SessionResponse();
-            errorResponse.setMessage("An error occurred during login.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            loginResponse.setSessionid(null);
+            loginResponse.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResponse);
         }
     }
 
 
     @PostMapping("/createUser")
-    public ResponseEntity<String> createUser(@RequestBody UserModel user) {
+    public ResponseEntity<CodeResponse> createUser(@RequestBody UserModel user) {
+        var response = new CodeResponse();
         try {
-            user.setOtp();
             var userService = new UserService();
-            int responseCode = userService.createUser(jdbcTemplate, user);
-            if(responseCode != 0)
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email address already registered.");
-            emailService.sendEmail(
-                    user.getEmail(),
-                    "DietiEstates Account Verification",
-                    emailService.activationEmailFromTemplateBody(user.getFirstName(), user.getOtp())
-            );
-            return ResponseEntity.status(HttpStatus.CREATED).body("Account Created.");
+            response.setCode(userService.createUser(jdbcTemplate, user));
+            if(response.getCode()==0)
+                emailService.sendConfirmAccountEmail(user, 'U');
+            return response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.toString());
+            response.setCode(-99);
+            response.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @GetMapping("/confirmUser")
-    public ResponseEntity<String> confirmUser(String email, String otp) {
+    public ResponseEntity<CodeResponse> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
+        CodeResponse response = new CodeResponse();
         try {
-            UserModel user = new UserModel();
-            user.setEmail(email);
-            user.setOtp(otp);
             var userService = new UserService();
-            return ((userService.confirmUser(jdbcTemplate, user) == 0) ? ResponseEntity.ok("Account successfully created!") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid OTP code."));
+            if(isManagerOrAgent)
+                response.setCode(userService.confirmUser(jdbcTemplate, user));
+            else
+                response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));
+            return response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.toString());
+            response.setCode(-99);
+            response.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/createAgent")
+    public ResponseEntity<CodeResponse> createAgent(@RequestBody UserModel user, @RequestHeader String sessionId) {
+        CodeResponse response = new CodeResponse();
+        try {
+            user.setPwd();
+            var userService = new UserService();
+            response.setCode(userService.createAgent(jdbcTemplate, user, sessionId));
+            if(response.getCode()==0)
+                emailService.sendConfirmAccountEmail(user, 'U');
+            return response.toHttpResponse();
+        }
+        catch(Exception ex)
+        {
+            response.setCode(-99);
+            response.setMessage(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

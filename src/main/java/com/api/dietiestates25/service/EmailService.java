@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
+import com.api.dietiestates25.model.UserModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,14 +38,14 @@ public class EmailService {
     private String body;
 
 
-    public void sendEmail(String _toAddress, String _subject, String _body) {
+    private void sendEmail(String _toAddress, String _subject, String _body) {
         toAddress = _toAddress;
         subject = _subject;
         body = _body;
         sendEmail();
     }
 
-    public void sendEmail() {
+    private void sendEmail() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
         AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
                 .withRegion(this.awsRegion)
@@ -64,17 +65,40 @@ public class EmailService {
         client.sendEmail(request);
     }
 
-    public void sendEmail(List<String> emails) {
+    private void sendEmail(List<String> emails) {
         for (String email : emails) {
             sendEmail(email, subject, body);
         }
     }
 
-    public String activationEmailFromTemplateBody(String name, String otp) throws IOException {
+    public boolean sendConfirmAccountEmail(UserModel user, char usertype) {
+        try {
+            sendEmail(
+                    user.getEmail(),
+                    "DietiEstates Account Verification",
+                    (usertype=='U') ?
+                            templateActivationEmailOTP(user.getFirstName(), user.getOtp())
+                            :
+                            templateActivationEmailTempPwd(user.getFirstName(), user.getPwd(),(usertype=='A')?"Agent":"Manager")
+            );
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    private String templateActivationEmailOTP(String name, String otp) throws IOException {
         return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/otp.html"))
                 .readAllBytes(), StandardCharsets.UTF_8)
                 .replace("${name}", name)
                 .replace("${otp}", otp);
+    }
+
+    private String templateActivationEmailTempPwd(String name, String pwd, String usertype) throws IOException {
+        return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/tempPwd.html"))
+                .readAllBytes(), StandardCharsets.UTF_8)
+                .replace("${name}", name)
+                .replace("${pwd}", pwd)
+                .replace("${usertype}", (usertype));
     }
 
 }

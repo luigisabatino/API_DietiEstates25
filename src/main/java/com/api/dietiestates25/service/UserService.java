@@ -1,11 +1,16 @@
 package com.api.dietiestates25.service;
 
+import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserService {
     public UserService() {}
@@ -22,14 +27,8 @@ public class UserService {
         String query = "SELECT * FROM LOGIN(?, ?)";
         try {
             return jdbcTemplate.queryForObject(query, (rs, _) -> {
-                String sessionId = rs.getString("session_id");
-                String message = rs.getString("message");
-                // Debugging, to-do: logging
-                System.out.println("Session ID: " + sessionId);
-                System.out.println("Message: " + message);
-
-                response.setSessionid(sessionId);
-                response.setMessage(message);
+                response.setSessionid(rs.getString("session_id"));
+                response.setMessage(rs.getString("message"));
                 return response;
             }, user.getEmail(), pwdInDB);
 
@@ -58,15 +57,33 @@ public class UserService {
     }
 
     public int createUser(JdbcTemplate jdbcTemplate, UserModel user) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPwd(encoder.encode(user.getPwd()));
-        String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?,?,?)";
+        user.setOtp();
+        user.encodePwd();
+        String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
-                user.getEmail(), user.getPwd(),((user.getCompany()==null) ? "U":"A"),user.getFirstName(),user.getLastName(),user.getCompany(),String.valueOf(user.getOtp())));
+                user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName(),String.valueOf(user.getOtp())));
     }
 
-    public Integer confirmUser(JdbcTemplate jdbcTemplate, UserModel user) {
+    public int confirmUser(JdbcTemplate jdbcTemplate, UserModel user) {
         String query = "SELECT * FROM CONFIRM_USER(?, ?)";
-        return (jdbcTemplate.queryForObject(query, Integer.class, user.getEmail(), user.getOtp()));
+        return (jdbcTemplate.queryForObject(query, Integer.class,
+                user.getEmail(), user.getOtp()));
     }
+
+    public int confirmManagerOrAgent(JdbcTemplate jdbcTemplate, UserModel user) {
+        user.encodePwd();
+        String query = "SELECT * FROM CONFIRM_MANAGERORAGENT(?, ?, ?)";
+        var response = new CodeResponse();
+        return (jdbcTemplate.queryForObject(query, Integer.class,
+                user.getEmail(), user.getPwd(), user.getOtp()));
+    }
+
+    public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
+        user.encodePwd();
+        String query = "SELECT CREATE_TEMP_AGENT(?,?,?,?,?)";
+        var response = new CodeResponse();
+        return (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
+    }
+
 }

@@ -10,11 +10,10 @@ import java.sql.SQLException;
 
 public class CompanyService {
     public CodeResponse insertCompany(JdbcTemplate jdbcTemplate, InsertCompanyRequest request) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        request.getManager().setPwd(encoder.encode(request.getManager().getPwd()));
-        var response = new CodeResponse();
-        String query = "SELECT * FROM CREATE_COMPANY(?,?,?,?,?,?,?)";
         var manager = request.getManager();
+        manager.setPwd();
+        var response = new CodeResponse();
+        String query = "SELECT * FROM CREATE_COMPANY(?,?,?,?,?,?)";
         return jdbcTemplate.queryForObject(query, new RowMapper<CodeResponse>() {
             @Override
             public CodeResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -22,7 +21,7 @@ public class CompanyService {
                 response.setMessage(rs.getString("message"));
                 return response;
             }
-        }, request.getVatNumber(), request.getCompanyName(), manager.getEmail(), manager.getFirstName(), manager.getLastName(), manager.getOtp(), manager.getPwd());
+        }, request.getVatNumber(), request.getCompanyName(), manager.getEmail(), manager.getFirstName(), manager.getLastName(), manager.getPwd());
     }
 
 }

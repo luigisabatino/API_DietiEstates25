@@ -21,11 +21,9 @@ public class CodeResponse {
             case 0:
                 return ResponseEntity.status(HttpStatus.OK).body(this);
             case -1:
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this);
             case -2:
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this);
             case -3:
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(this);
             case -4:
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(this);
             case -5:

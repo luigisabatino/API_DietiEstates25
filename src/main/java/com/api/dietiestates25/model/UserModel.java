@@ -8,6 +8,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Getter
 @Setter
@@ -20,6 +22,19 @@ public class UserModel {
     private String otp;
 
     public UserModel() { }
+
+    public UserModel(ResultSet rs) {
+        try {
+            email = rs.getString("email");
+            pwd = rs.getString("pwd");
+            firstName = rs.getString("firstName");
+            lastName = rs.getString("lastName");
+            company = rs.getString("company");
+        }
+        catch(SQLException ex) {
+            //TO DO
+        }
+    }
 
     public void setPwd() {
         String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_<>";

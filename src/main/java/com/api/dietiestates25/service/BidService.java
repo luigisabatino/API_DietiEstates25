@@ -1,7 +1,7 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.response.EntityResponse;
+import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
@@ -26,8 +26,8 @@ public class BidService {
                 sessionId, bidId )));
     }
 
-    public EntityResponse<BidModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
-        var response = new EntityResponse<BidModel>();
+    public CodeEntitiesResponse<BidModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
+        var response = new CodeEntitiesResponse<BidModel>();
         switch(key) {
             case BidsKey.ad :
                 response.setEntities(getBidsFromAd(jdbcTemplate, Integer.parseInt(value)));

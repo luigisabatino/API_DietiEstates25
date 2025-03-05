@@ -2,15 +2,12 @@ package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.EntityResponse;
+import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.service.BidService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.ResultSet;
-import java.util.List;
 
 @RestController
 public class BidController {
@@ -73,7 +70,7 @@ public class BidController {
     }
 
     @GetMapping("/getBids")
-    public ResponseEntity<EntityResponse<BidModel>> getBids(BidService.BidsKey key, String value)
+    public ResponseEntity<CodeEntitiesResponse<BidModel>> getBids(BidService.BidsKey key, String value)
     {
         try {
             var bidService = new BidService();

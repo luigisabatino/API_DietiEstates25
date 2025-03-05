@@ -1,16 +1,14 @@
 package com.api.dietiestates25.service;
 
+import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.response.CodeResponse;
+import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class UserService {
     public UserService() {}
@@ -84,4 +82,12 @@ public class UserService {
                 sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
     }
 
+    public CodeEntitiesResponse<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
+        var response = new CodeEntitiesResponse<UserModel>();
+        String query = "SELECT * FROM USERS WHERE COMPANY = ?";
+        response.setEntities(jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
+            return new UserModel(rs);
+        }));
+        return response;
+    }
 }

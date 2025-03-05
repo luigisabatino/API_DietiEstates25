@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 @Getter
 @Setter
 public class AdModel {
+    private int id;
     private double price;
     private String nation;
     private String county;

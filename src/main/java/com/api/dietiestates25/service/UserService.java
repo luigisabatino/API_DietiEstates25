@@ -17,13 +17,11 @@ public class UserService {
 
     public SessionResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
         SessionResponse response = new SessionResponse();
-
         String pwdInDB = checkPwd(jdbcTemplate, user);
         if (pwdInDB == null) {
             response.setMessage("Invalid credentials.");
             return response;
         }
-
         String query = "SELECT * FROM LOGIN(?, ?)";
         try {
             return jdbcTemplate.queryForObject(query, (rs, _) -> {
@@ -34,10 +32,10 @@ public class UserService {
 
         } catch (EmptyResultDataAccessException e) {
             response.setMessage("Error: Unable to create session");
-            return response;
         } catch (DataAccessException e) {
-            System.out.println("Database error details: " + e.getMessage());
             response.setMessage("Error: Database error occurred");
+        }
+        finally {
             return response;
         }
     }

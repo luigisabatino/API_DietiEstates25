@@ -4,7 +4,6 @@ import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.service.BidService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +33,13 @@ public class BidController {
     }
 
     @PutMapping("/cancelBid")
-    public ResponseEntity<CodeResponse> cancelBid(@RequestHeader String sessionId, @RequestParam int bidId)
+    public ResponseEntity<CodeResponse> cancelBid(@RequestHeader String sessionId, @RequestParam int bidId, boolean isCounteroffer)
     {
         var response = new CodeResponse();
         try {
             var bidService = new BidService();
-            response.setCode(bidService.cancelBid(jdbcTemplate, sessionId, bidId));
+            response.setCode((isCounteroffer)? bidService.cancelCounteroffer(jdbcTemplate, sessionId, bidId)
+                    : bidService.cancelBid(jdbcTemplate, sessionId, bidId));
             return response.toHttpResponse();
         }
         catch(Exception ex)
@@ -48,13 +48,14 @@ public class BidController {
         }
     }
 
-    @PutMapping("/refuseBid")
-    public ResponseEntity<CodeResponse> refuseBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
+    @PutMapping("/acceptOrRefuseBid")
+    public ResponseEntity<CodeResponse> acceptOrRefuseBid(@RequestHeader String sessionId, @RequestBody BidModel bid, boolean isCounteroffer)
     {
         var response = new CodeResponse();
         try {
             var bidService = new BidService();
-            response.setCode(bidService.refuseBid(jdbcTemplate, sessionId, bid));
+            response.setCode((isCounteroffer)? bidService.refuseCounteroffer(jdbcTemplate, sessionId, bid.getId())
+                    : bidService.acceptOrRefuseBid(jdbcTemplate, sessionId, bid));
             return response.toHttpResponse();
         }
         catch(Exception ex)

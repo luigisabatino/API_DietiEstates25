@@ -1,7 +1,6 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,11 +19,21 @@ public class BidService {
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, bidId )));
     }
-    public int refuseBid(JdbcTemplate jdbcTemplate, String sessionId, BidModel bid) {
-        requiredValuesForBidOperations(bid, Operation.RefuseBid);
-        String query = "SELECT * FROM REFUSE_BID(?, ?,?,?)";
+    public int acceptOrRefuseBid(JdbcTemplate jdbcTemplate, String sessionId, BidModel bid) {
+        requiredValuesForBidOperations(bid, Operation.AcceptOrRefuseBid);
+        String query = "SELECT * FROM ACCEPT_REFUSE_BID(?,?,?,?,?)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
-                sessionId, bid.getId(), bid.getAgentMessage(), bid.getAmount() )));
+                sessionId, bid.getId(), bid.getAgentMessage(), bid.getAmount(), bid.getStatus() )));
+    }
+    public int cancelCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, int coId) {
+        String query = "SELECT * FROM CANCEL_Counteroffer(?, ?)";
+        return ( (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId, coId )));
+    }
+    public int refuseCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, int coId) {
+        String query = "SELECT * FROM REFUSE_Counteroffer(?, ?)";
+        return ( (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId, coId )));
     }
     public CodeEntitiesResponse<BidModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
         var response = new CodeEntitiesResponse<BidModel>();
@@ -60,19 +69,21 @@ public class BidService {
         }, id);
     }
     public static void requiredValuesForBidOperations(BidModel bid, BidService.Operation operation) {
-        if(operation == Operation.RefuseBid && (bid.getId()==0))
+        if(operation == Operation.AcceptOrRefuseBid && (bid.getId()==0))
             throw new RequiredParameterException("bid_id");
-        if((operation == Operation.RefuseBid || operation == Operation.InsertBid) && (bid.getAgentMessage()==null))
+        if((operation == Operation.AcceptOrRefuseBid || operation == Operation.InsertBid) && (bid.getAgentMessage()==null))
             bid.setAgentMessage("");
-        if((operation == Operation.RefuseBid || operation == Operation.InsertBid) && (bid.getOffererMessage()==null))
+        if((operation == Operation.AcceptOrRefuseBid || operation == Operation.InsertBid) && (bid.getOffererMessage()==null))
             bid.setOffererMessage("");
         if((operation == Operation.InsertBid) && ((bid.getAd()==0)))
             throw new RequiredParameterException("ad");
         if((operation == Operation.InsertBid) && ((bid.getAmount()==0)))
             throw new RequiredParameterException("amount");
+        if((operation == Operation.AcceptOrRefuseBid) && (bid.getStatus().isBlank() || bid.getStatus().isBlank()))
+            throw new RequiredParameterException("status");
     }
     public enum Operation {
-        RefuseBid,
+        AcceptOrRefuseBid,
         InsertBid;
     }
     public enum BidsKey {

@@ -3,9 +3,8 @@ package com.api.dietiestates25.controller;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.CompanyService;
 import com.api.dietiestates25.model.request.InsertCompanyRequest;
-import com.api.dietiestates25.service.ApiLayerService;
+import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.EmailService;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +19,7 @@ public class CompanyController {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ApiLayerService apiLayerService;
-
-    @Autowired
-    private EmailService emailService;
-
+    private ExternalApiService apiService;
 
     public CompanyController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -35,8 +30,8 @@ public class CompanyController {
     {
         var response = new CodeResponse();
         try {
-            if(!apiLayerService.verifyVatNumber(request.getVatNumber())) {
-                response.setCode(-100);
+            if(!apiService.verifyVatNumber(request.getVatNumber())) {
+                response.setCode(-97);
                 response.setMessage("Error: VAT Number not valid");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }

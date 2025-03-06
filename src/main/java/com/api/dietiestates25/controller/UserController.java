@@ -2,13 +2,10 @@ package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SessionResponse> login(@RequestBody UserModel user) {
-        var loginResponse = new SessionResponse();
+    public ResponseEntity<CodeResponse> login(@RequestBody UserModel user) {
+        var loginResponse = new CodeResponse();
         try {
             var userService = new UserService();
             loginResponse = userService.login(jdbcTemplate, user);

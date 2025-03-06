@@ -1,17 +1,11 @@
 package com.api.dietiestates25.model;
 
-import com.api.dietiestates25.model.response.SessionResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +15,7 @@ public class UserModel {
     private String firstName;
     private String lastName;
     private String company;
-    private String otp;
+    private SEtring otp;
 
     public UserModel() { }
 

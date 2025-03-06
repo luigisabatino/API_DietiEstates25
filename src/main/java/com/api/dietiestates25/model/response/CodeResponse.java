@@ -29,6 +29,10 @@ public class CodeResponse {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(this);
             case -5:
                 return ResponseEntity.status(HttpStatus.CREATED).body(this);
+            case -6:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
+            case -7:
+                return ResponseEntity.status(HttpStatus.CONTINUE).body(this);
             case -99:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
             default:
@@ -42,6 +46,7 @@ public class CodeResponse {
     public void setMessageFromCode() {
         switch (code) {
             case 0:
+            case -5:
                 message = "Operation successfull.";
             case -1:
                 message = "Error: Invalid session.";
@@ -51,10 +56,10 @@ public class CodeResponse {
                 message = "Already exist a user with this email in our systems.";
             case -4:
                 message = "Impossible to insert bid for this ad.";
-            case -5:
-                message = "Operation successfull.";
             case -6:
                 message = "Invalid value.";
+            case -7:
+                message = "temporary password must be change";
             default:
                 if (code > 0) {
                     message = "Operation successfull.";
@@ -67,6 +72,7 @@ public class CodeResponse {
             code = -98;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
         }
+        code = -99;
         message = ex.toString();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
     }

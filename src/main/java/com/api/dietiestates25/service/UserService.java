@@ -3,7 +3,6 @@ package com.api.dietiestates25.service;
 import com.api.dietiestates25.throwable.*;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
-import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,18 +10,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {
     public UserService() {}
-    public SessionResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
+    public CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
         requiredValuesForUserOperations(user, Operation.Login);
-        SessionResponse response = new SessionResponse();
+        CodeResponse response = new CodeResponse();
         String pwdInDB = checkPwd(jdbcTemplate, user);
         if (pwdInDB == null) {
             response.setMessage("Invalid credentials.");
+            response.setCode(-2);
             return response;
         }
         String query = "SELECT * FROM LOGIN(?, ?)";
         return jdbcTemplate.queryForObject(query, (rs, _) -> {
-                response.setSessionid(rs.getString("session_id"));
-                response.setMessage(rs.getString("message"));
+                response.setMessage(rs.getString("session_id"));
+                response.setCode(rs.getInt("code"));
                 return response;
                 }, user.getEmail(), pwdInDB);
     }

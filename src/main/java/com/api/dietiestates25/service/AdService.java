@@ -1,9 +1,6 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.request.EntityRequest;
-import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
 

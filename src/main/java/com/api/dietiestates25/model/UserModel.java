@@ -15,7 +15,7 @@ public class UserModel {
     private String firstName;
     private String lastName;
     private String company;
-    private SEtring otp;
+    private String otp;
 
     public UserModel() { }
 

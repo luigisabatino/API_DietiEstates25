@@ -29,7 +29,7 @@ public class SessionResponse {
             message = "Error: the parameter " + ex.getMessage() + " is required!";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
         }
-        message = ex.ToString();
+        message = ex.toString();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
     }
 }

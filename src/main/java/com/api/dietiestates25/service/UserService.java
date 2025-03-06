@@ -1,19 +1,18 @@
 package com.api.dietiestates25.service;
 
-import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.throwable.*;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {
     public UserService() {}
-
     public SessionResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
+        requiredValuesForUserOperations(user, Operation.Login);
         SessionResponse response = new SessionResponse();
         String pwdInDB = checkPwd(jdbcTemplate, user);
         if (pwdInDB == null) {
@@ -21,28 +20,17 @@ public class UserService {
             return response;
         }
         String query = "SELECT * FROM LOGIN(?, ?)";
-        try {
-            return jdbcTemplate.queryForObject(query, (rs, _) -> {
+        return jdbcTemplate.queryForObject(query, (rs, _) -> {
                 response.setSessionid(rs.getString("session_id"));
                 response.setMessage(rs.getString("message"));
                 return response;
-            }, user.getEmail(), pwdInDB);
-
-        } catch (EmptyResultDataAccessException e) {
-            response.setMessage("Error: Unable to create session");
-        } catch (DataAccessException e) {
-            response.setMessage("Error: Database error occurred");
-        }
-        finally {
-            return response;
-        }
+                }, user.getEmail(), pwdInDB);
     }
-
     private String checkPwd(JdbcTemplate jdbcTemplate, UserModel user) {
         String pwdInDB;
         try {
             String query = "SELECT PWD FROM USERS WHERE email = ?";
-            pwdInDB = jdbcTemplate.queryForObject(query, String.class, user);
+            pwdInDB = jdbcTemplate.queryForObject(query, String.class, user.getEmail());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -51,37 +39,36 @@ public class UserService {
             return null;
         return pwdInDB;
     }
-
     public int createUser(JdbcTemplate jdbcTemplate, UserModel user) {
+        requiredValuesForUserOperations(user, Operation.CreateUser);
         user.setOtp();
         user.encodePwd();
         String query = "SELECT CREATE_TEMP_USER(?,?,?,?,?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName(),String.valueOf(user.getOtp())));
     }
-
     public int confirmUser(JdbcTemplate jdbcTemplate, UserModel user) {
+        requiredValuesForUserOperations(user, Operation.ConfirmUser);
         String query = "SELECT * FROM CONFIRM_USER(?, ?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 user.getEmail(), user.getOtp()));
     }
-
     public int confirmManagerOrAgent(JdbcTemplate jdbcTemplate, UserModel user) {
+        requiredValuesForUserOperations(user, Operation.ConfirmManagerOrAgent);
         user.encodePwd();
         String query = "SELECT * FROM CONFIRM_MANAGERORAGENT(?, ?, ?)";
         var response = new CodeResponse();
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 user.getEmail(), user.getPwd(), user.getOtp()));
     }
-
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
+        requiredValuesForUserOperations(user, Operation.CreateManager);
         user.encodePwd();
         String query = "SELECT CREATE_TEMP_AGENT(?,?,?,?,?)";
         var response = new CodeResponse();
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
     }
-
     public CodeEntitiesResponse<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
         var response = new CodeEntitiesResponse<UserModel>();
         String query = "SELECT * FROM USERS WHERE COMPANY = ?";
@@ -89,5 +76,28 @@ public class UserService {
             return new UserModel(rs);
         }));
         return response;
+    }
+    public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
+        if(operation != Operation.AgentsByCompany && (user.getEmail() == null || user.getEmail().isBlank()))
+            throw new RequiredParameterException("email");
+        if(operation != Operation.ConfirmUser && (user.getPwd() == null || user.getPwd().isBlank()))
+            throw new RequiredParameterException("pwd");
+        if((operation == Operation.ConfirmUser || operation == Operation.ConfirmManagerOrAgent) && (user.getOtp() == null || user.getOtp().isBlank()))
+            throw new RequiredParameterException("otp");
+        if((operation == Operation.CreateUser || operation == Operation.CreateAgent) && (user.getFirstName() == null || user.getFirstName().isBlank()))
+            throw new RequiredParameterException("firstName");
+        if((operation == Operation.CreateUser || operation == Operation.CreateAgent) && (user.getLastName() == null || user.getLastName().isBlank()))
+            throw new RequiredParameterException("lastName");
+        if((operation == Operation.CreateAgent || operation == Operation.AgentsByCompany) && (user.getCompany() == null || user.getCompany().isBlank()))
+            throw new RequiredParameterException("company");
+    }
+    public enum Operation {
+        CreateUser,
+        CreateAgent,
+        CreateManager,
+        Login,
+        ConfirmManagerOrAgent,
+        ConfirmUser,
+        AgentsByCompany;
     }
 }

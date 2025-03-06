@@ -1,5 +1,6 @@
 package com.api.dietiestates25.model.response;
 
+import com.api.dietiestates25.throwable.RequiredParameterException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -60,4 +61,14 @@ public class CodeResponse {
                 }
         }
     }
+    public ResponseEntity<CodeResponse> toHttpResponse(Exception ex) {
+        if(ex instanceof RequiredParameterException) {
+            message = "Error: the parameter " + ex.getMessage() + " is required!";
+            code = -98;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
+        }
+        message = ex.toString();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
+    }
+
 }

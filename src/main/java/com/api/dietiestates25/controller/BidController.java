@@ -29,14 +29,12 @@ public class BidController {
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
     @PutMapping("/cancelBid")
-    public ResponseEntity<CodeResponse> cancelBid(@RequestHeader String sessionId, int bidId)
+    public ResponseEntity<CodeResponse> cancelBid(@RequestHeader String sessionId, @RequestParam int bidId)
     {
         var response = new CodeResponse();
         try {
@@ -46,31 +44,27 @@ public class BidController {
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
     @PutMapping("/refuseBid")
-    public ResponseEntity<CodeResponse> refuseBid(@RequestHeader String sessionId, int bidId)
+    public ResponseEntity<CodeResponse> refuseBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
     {
         var response = new CodeResponse();
         try {
             var bidService = new BidService();
-            response.setCode(bidService.refuseBid(jdbcTemplate, sessionId, bidId));
+            response.setCode(bidService.refuseBid(jdbcTemplate, sessionId, bid));
             return response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
     @GetMapping("/getBids")
-    public ResponseEntity<CodeEntitiesResponse<BidModel>> getBids(BidService.BidsKey key, String value)
+    public ResponseEntity<CodeEntitiesResponse<BidModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
     {
         try {
             var bidService = new BidService();

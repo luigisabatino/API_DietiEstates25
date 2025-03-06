@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,17 +25,12 @@ public class UserModel {
 
     public UserModel() { }
 
-    public UserModel(ResultSet rs) {
-        try {
-            email = rs.getString("email");
-            pwd = rs.getString("pwd");
-            firstName = rs.getString("firstName");
-            lastName = rs.getString("lastName");
-            company = rs.getString("company");
-        }
-        catch(SQLException ex) {
-            //TO DO
-        }
+    public UserModel(ResultSet rs) throws SQLException {
+        email = rs.getString("email");
+        pwd = rs.getString("pwd");
+        firstName = rs.getString("firstName");
+        lastName = rs.getString("lastName");
+        company = rs.getString("company");
     }
 
     public void setPwd() {
@@ -56,5 +53,4 @@ public class UserModel {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));
     }
-
 }

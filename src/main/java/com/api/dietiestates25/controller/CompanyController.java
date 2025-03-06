@@ -46,9 +46,7 @@ public class CompanyController {
         }
         catch(Exception ex)
         {
-            response.setCode(99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 

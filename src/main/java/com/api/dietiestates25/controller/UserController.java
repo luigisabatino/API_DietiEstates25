@@ -1,13 +1,12 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.SessionResponse;
 import com.api.dietiestates25.model.UserModel;
-import com.api.dietiestates25.service.BidService;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,11 +31,9 @@ public class UserController {
         try {
             var userService = new UserService();
             loginResponse = userService.login(jdbcTemplate, user);
-            return loginResponse.getFormattedResponse();
+            return loginResponse.toHttpResponse();
         } catch (Exception ex) {
-            loginResponse.setSessionid(null);
-            loginResponse.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResponse);
+            return loginResponse.toHttpResponse(ex);
         }
     }
 
@@ -53,9 +50,7 @@ public class UserController {
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
@@ -72,9 +67,7 @@ public class UserController {
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
@@ -91,14 +84,12 @@ public class UserController {
         }
         catch(Exception ex)
         {
-            response.setCode(-99);
-            response.setMessage(ex.toString());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return response.toHttpResponse(ex);
         }
     }
 
     @GetMapping("/getAgentsByCompany")
-    public ResponseEntity<CodeEntitiesResponse<UserModel>> getAgentsByCompany(String company)
+    public ResponseEntity<CodeEntitiesResponse<UserModel>> getAgentsByCompany(@RequestParam String company)
     {
         try {
             var userService = new UserService();

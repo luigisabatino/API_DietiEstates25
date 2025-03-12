@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
 @Component
 public class EmailService {
 

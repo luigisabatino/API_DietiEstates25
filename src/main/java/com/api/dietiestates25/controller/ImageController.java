@@ -13,12 +13,10 @@ import java.util.List;
 @RequestMapping("/image-controller")
 public class ImageController {
 
-    @Autowired
-    private ImageService imageService;
-
     @PostMapping("/uploadImage")
     public ResponseEntity<String> uploadImage(@RequestBody ImageModel request) {
         try {
+            ImageService imageService = new ImageService();
             imageService.uploadImage(request);
             return ResponseEntity.ok("Ok");
         } catch (IllegalArgumentException e) {
@@ -31,6 +29,7 @@ public class ImageController {
     @GetMapping("/getImagesByAd")
     public ResponseEntity<List<ImageModel>> getAdImages(@RequestParam int idAd) {
         try {
+            ImageService imageService = new ImageService();
             return ResponseEntity.ok(imageService.getImagesByPrefix(idAd + "_"));
         }
         catch (Exception ex) {
@@ -40,6 +39,7 @@ public class ImageController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteAdImage(@RequestParam int idAd) {
+        ImageService imageService = new ImageService();
         imageService.deleteImagesByPrefix(idAd + "_");
         return ResponseEntity.ok(true);
     }

@@ -1,8 +1,9 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.AdModel;
+import com.api.dietiestates25.model.request.SearchAdRequest;
+import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.GeoapifyResponse;
 import com.api.dietiestates25.service.AdService;
 import com.api.dietiestates25.service.ExternalApiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class AdController {
     {
         var response = new CodeResponse();
         try {
-            ad.setPlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
+            ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
             var adService = new AdService();
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             return response.toHttpResponse();
@@ -37,4 +38,18 @@ public class AdController {
             return response.toHttpResponse(ex);
         }
     }
+
+    @PutMapping("/searchAd")
+    public ResponseEntity<CodeEntitiesResponse<AdModel>> searchAd(@RequestBody SearchAdRequest request)
+    {
+        try {
+            var adService = new AdService();
+            return ResponseEntity.ok(adService.searchAd(jdbcTemplate, request));
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
+    }
+
 }

@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.api.dietiestates25.model.ImageModel;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

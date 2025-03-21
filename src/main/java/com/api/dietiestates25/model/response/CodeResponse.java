@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 @Setter
 public class CodeResponse {
     private int code;
-    private String message;
+    private String message = "";
 
     public CodeResponse() {
     }
@@ -48,22 +48,26 @@ public class CodeResponse {
             case 0:
             case -5:
                 message = "Operation successfull.";
+                break;
             case -1:
                 message = "Error: Invalid session.";
+                break;
             case -2:
                 message = "Error: Don't have permission to perform the requested operation.";
+                break;
             case -3:
                 message = "Already exist a user with this email in our systems.";
+                break;
             case -4:
                 message = "Impossible to insert bid for this ad.";
+                break;
             case -6:
                 message = "Invalid value.";
+                break;
             case -7:
                 message = "temporary password must be change";
             default:
-                if (code > 0) {
-                    message = "Operation successfull.";
-                }
+                if (code > 0) message = "Operation successfull.";
         }
     }
     public ResponseEntity<CodeResponse> toHttpResponse(Exception ex) {

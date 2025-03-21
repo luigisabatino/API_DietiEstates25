@@ -51,12 +51,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/confirmUser")
+    @PostMapping("/confirmUser")
     public ResponseEntity<CodeResponse> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
         CodeResponse response = new CodeResponse();
         try {
             var userService = new UserService();
-            if(isManagerOrAgent)
+            if(!isManagerOrAgent)
                 response.setCode(userService.confirmUser(jdbcTemplate, user));
             else
                 response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));

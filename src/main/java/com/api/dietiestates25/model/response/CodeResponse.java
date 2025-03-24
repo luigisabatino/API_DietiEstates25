@@ -13,8 +13,6 @@ public class CodeResponse  {
     private int code;
     private String message = "";
 
-
-
     protected void setMessageFromCode() {
         switch (code) {
             case 0:
@@ -47,9 +45,7 @@ public class CodeResponse  {
                 break;
         }
     }
-    protected HttpStatus httpStatusFromCode(Exception ex) {
-        if(ex != null)
-            setCodeByException(ex);
+    protected HttpStatus httpStatusFromCode() {
         if (getMessage().isBlank())
             setMessageFromCode();
         switch (code) {
@@ -82,15 +78,20 @@ public class CodeResponse  {
         return toHttpMessageResponse(null);
     }
     public ResponseEntity<String> toHttpMessageResponse(Exception ex) {
+        setCodeByException(ex);
         setMessageFromCode();
-        return ResponseEntity.status(httpStatusFromCode(ex)).body(getMessage());
+        return ResponseEntity.status(httpStatusFromCode()).body(message);
     }
     protected void setCodeByException(Exception ex) {
-        if(ex instanceof RequiredParameterException) {
-            setMessage("Error: the parameter " + ex.getMessage() + " is required!");
-            code = -98;
+        if(ex != null) {
+            if(ex instanceof RequiredParameterException) {
+                setMessage("Error: the parameter " + ex.getMessage() + " is required!");
+                code = -98;
+            }
+            else {
+                code = -99;
+                setMessage(ex.toString());
+            }
         }
-        code = -99;
-        setMessage(ex.toString());
     }
 }

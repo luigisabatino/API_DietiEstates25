@@ -15,17 +15,23 @@ public class CodeEntitiesResponse<T> extends CodeResponse {
     public CodeEntitiesResponse() {
         entities = new ArrayList<T>();
     }
+    public CodeEntitiesResponse(CodeResponse cr) {
+        this.setCode(cr.getCode());
+        this.setMessage(cr.getMessage());
+        entities = new ArrayList<T>();
+    }
     public void addInEntities(T value) {
         entities.add(value);
     }
 
     public ResponseEntity<DetailEntityResponse<T>> toHttpEntitiesResponse(Exception ex) {
-        var response = new DetailEntityResponse<T>();
+        setCodeByException(ex);
         if((getMessage().isBlank()))
             setMessageFromCode();
+        var response = new DetailEntityResponse<T>();
         response.setMessage(getMessage());
         response.setEntities(entities);
-        return ResponseEntity.status(httpStatusFromCode(ex)).body(response);
+        return ResponseEntity.status(httpStatusFromCode()).body(response);
     }
     public ResponseEntity<DetailEntityResponse<T>> toHttpEntitiesResponse() {
         return toHttpEntitiesResponse(null);

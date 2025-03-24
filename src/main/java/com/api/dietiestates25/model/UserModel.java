@@ -21,12 +21,11 @@ public class UserModel {
 
     public UserModel(ResultSet rs) throws SQLException {
         email = rs.getString("email");
-        pwd = rs.getString("pwd");
+        //pwd = rs.getString("pwd");
         firstName = rs.getString("firstName");
         lastName = rs.getString("lastName");
         company = rs.getString("company");
     }
-
     public void setPwd() {
         String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_<>";
         SecureRandom random = new SecureRandom();
@@ -36,13 +35,11 @@ public class UserModel {
         }
         pwd = pwdRandom;
     }
-
     public void setOtp() {
         SecureRandom random = new SecureRandom();
         int _otp = 100000 + random.nextInt(900000);
         otp = String.valueOf(_otp);
     }
-
     public void encodePwd() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));

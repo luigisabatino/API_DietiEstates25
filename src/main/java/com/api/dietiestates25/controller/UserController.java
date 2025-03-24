@@ -28,8 +28,8 @@ public class UserController {
         var response = new CodeEntitiesResponse<UserModel>();
         try {
             var userService = new UserService();
-            response = (CodeEntitiesResponse<UserModel>) userService.login(jdbcTemplate, user);
-            if(response.getCode() > 0) {
+            response = new CodeEntitiesResponse<UserModel>(userService.login(jdbcTemplate, user));
+            if(response.getCode() == 0) {
                 response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
             }
             return response.toHttpEntitiesResponse();

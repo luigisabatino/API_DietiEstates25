@@ -23,18 +23,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CodeResponse> login(@RequestBody UserModel user) {
-        var loginResponse = new CodeResponse();
+    public ResponseEntity<CodeEntitiesResponse<UserModel>> login(@RequestBody UserModel user) {
+        var loginResponse = new CodeEntitiesResponse<UserModel>();
         try {
             var userService = new UserService();
-            loginResponse = userService.login(jdbcTemplate, user);
-            return loginResponse.toHttpResponse();
+            loginResponse = (CodeEntitiesResponse<UserModel>) userService.login(jdbcTemplate, user);
+            if(loginResponse.getCode() > 0) {
+                loginResponse.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
+            }
+            return ResponseEntity.ok(loginResponse);//loginResponse.toHttpResponse();
         } catch (Exception ex) {
-            return loginResponse.toHttpResponse(ex);
+            return null; //return loginResponse.toHttpResponse(ex);
         }
     }
-
-
     @PostMapping("/createUser")
     public ResponseEntity<CodeResponse> createUser(@RequestBody UserModel user) {
         var response = new CodeResponse();
@@ -50,21 +51,23 @@ public class UserController {
             return response.toHttpResponse(ex);
         }
     }
-
     @PostMapping("/confirmUser")
-    public ResponseEntity<CodeResponse> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
-        CodeResponse response = new CodeResponse();
+    public ResponseEntity<CodeEntitiesResponse<UserModel>> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
+        CodeEntitiesResponse<UserModel> response = new CodeEntitiesResponse<UserModel>();
         try {
             var userService = new UserService();
             if(!isManagerOrAgent)
                 response.setCode(userService.confirmUser(jdbcTemplate, user));
             else
                 response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));
-            return response.toHttpResponse();
+            if(response.getCode()>0)
+                response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
+            return ResponseEntity.ok(response);
+            //return response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            return response.toHttpResponse(ex);
+            return null; //response.toHttpResponse(ex);
         }
     }
 

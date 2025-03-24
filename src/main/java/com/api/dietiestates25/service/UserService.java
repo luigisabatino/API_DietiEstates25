@@ -1,5 +1,6 @@
 package com.api.dietiestates25.service;
 
+import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.throwable.*;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
@@ -76,6 +77,12 @@ public class UserService {
             return new UserModel(rs);
         }));
         return response;
+    }
+    public UserModel getUserByEmail(JdbcTemplate jdbcTemplate, String email) {
+        String query = "SELECT * FROM USERS WHERE EMAIL = ?";
+        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+            return new UserModel(rs);
+        }, email);
     }
     public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
         if(operation != Operation.AgentsByCompany && (user.getEmail() == null || user.getEmail().isBlank()))

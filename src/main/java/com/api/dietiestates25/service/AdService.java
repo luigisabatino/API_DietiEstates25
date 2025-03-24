@@ -15,7 +15,6 @@ public class AdService {
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, ad.getPrice(), ad.getNation(), ad.getCounty(), ad.getCity(), ad.getZipcode(), ad.getAddress(), ad.getNRooms(), ad.getNBathrooms(), ad.getFloor(), ad.isLift(), ad.getEnergyClass(), ad.getDescription(), ad.getType(),ad.getDimentions(),ad.getCoordinates())) );
     }
-
     public CodeEntitiesResponse<AdModel> searchAd(JdbcTemplate jdbcTemplate, SearchAdRequest ad) {
         var response = new CodeEntitiesResponse<AdModel>();
         if(ad.getId() > 0) {
@@ -29,14 +28,12 @@ public class AdService {
         }));
         return response;
     }
-
     public AdModel getAdById(JdbcTemplate jdbcTemplate, int id) {
         String query = "SELECT * FROM ADS WHERE ID_AD = ?";
         return jdbcTemplate.queryForObject(query, (rs, _) -> {
             return new AdModel(rs);
         }, id);
     }
-
     public static void requiredValuesForAdOperations(AdModel ad, AdService.Operation operation) {
         if((operation == Operation.InsertAd) && (ad.getPrice()==0))
             throw new RequiredParameterException("price");

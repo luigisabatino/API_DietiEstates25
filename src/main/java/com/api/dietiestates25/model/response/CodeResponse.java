@@ -5,45 +5,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.api.dietiestates25.model.*;
 
 @Getter
 @Setter
-public class CodeResponse {
+public class CodeResponse  {
     private int code;
     private String message = "";
 
-    public CodeResponse() {
-    }
 
-    public ResponseEntity<CodeResponse> toHttpResponse() {
-        if (message.isBlank())
-            setMessageFromCode();
-        switch (code) {
-            case 0:
-                return ResponseEntity.status(HttpStatus.OK).body(this);
-            case -1:
-            case -2:
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this);
-            case -3:
-            case -4:
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(this);
-            case -5:
-                return ResponseEntity.status(HttpStatus.CREATED).body(this);
-            case -6:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
-            case -7:
-                return ResponseEntity.status(HttpStatus.CONTINUE).body(this);
-            case -99:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
-            default:
-                if (code > 0) {
-                    return ResponseEntity.status(HttpStatus.CREATED).body(this);
-                } else
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this);
-        }
-    }
 
-    public void setMessageFromCode() {
+    protected void setMessageFromCode() {
         switch (code) {
             case 0:
             case -5:
@@ -56,30 +28,69 @@ public class CodeResponse {
                 message = "Error: Don't have permission to perform the requested operation.";
                 break;
             case -3:
-                message = "Already exist a user with this email in our systems.";
+                message = "Error: Already exist a user with this email in our systems.";
                 break;
             case -4:
-                message = "Impossible to insert bid for this ad.";
+                message = "Error: Impossible to insert bid for this ad.";
                 break;
             case -6:
-                message = "Invalid value.";
+                message = "Error: Invalid value.";
                 break;
             case -7:
-                message = "temporary password must be change";
+                message = "Error: temporary password must be change";
+                break;
+            case -97:
+                message = "Error: VAT Number not valid";
                 break;
             default:
                 if (code > 0) message = "Operation successfull.";
+                break;
         }
     }
-    public ResponseEntity<CodeResponse> toHttpResponse(Exception ex) {
+    protected HttpStatus httpStatusFromCode(Exception ex) {
+        if(ex != null)
+            setCodeByException(ex);
+        if (getMessage().isBlank())
+            setMessageFromCode();
+        switch (code) {
+            case 0:
+                return HttpStatus.OK;
+            case -1:
+            case -2:
+                return HttpStatus.UNAUTHORIZED;
+            case -3:
+            case -4:
+                return HttpStatus.CONFLICT;
+            case -5:
+                return HttpStatus.CREATED;
+            case -6:
+            case -97:
+            case -98:
+                return HttpStatus.BAD_REQUEST;
+            case -7:
+                return HttpStatus.CONTINUE;
+            case -99:
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            default:
+                if (code > 0) {
+                    return HttpStatus.CREATED;
+                } else
+                    return HttpStatus.NOT_FOUND;
+        }
+    }
+    public ResponseEntity<String> toHttpMessageResponse() {
+        return toHttpMessageResponse(null);
+    }
+    public ResponseEntity<String> toHttpMessageResponse(Exception ex) {
+        setMessageFromCode();
+        return ResponseEntity.status(httpStatusFromCode(ex)).body(getMessage());
+    }
+    protected void setCodeByException(Exception ex) {
         if(ex instanceof RequiredParameterException) {
-            message = "Error: the parameter " + ex.getMessage() + " is required!";
+            setMessage("Error: the parameter " + ex.getMessage() + " is required!");
             code = -98;
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this);
         }
         code = -99;
-        message = ex.toString();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this);
+        setMessage(ex.toString());
     }
-
 }

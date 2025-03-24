@@ -10,6 +10,7 @@ import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.api.dietiestates25.model.response.CodeResponse;
 
 @Component
 public class ExternalApiService {
@@ -23,7 +24,7 @@ public class ExternalApiService {
     @Value("${geoapify.radius}")
     private String geoRadius;
 
-    public boolean verifyVatNumber(String vatNumber) throws java. io. IOException, InterruptedException {
+    public int verifyVatNumber(String vatNumber) throws java. io. IOException, InterruptedException {
         String requestUrl = apilayerUrl + "&vat_number=" + vatNumber;
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -31,7 +32,9 @@ public class ExternalApiService {
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body().contains("\"valid\":true");
+        if(response.body().contains("\"valid\":true"))
+            return 0;
+        return -97;
     }
     public GeoapifyResponse placesInterestNearby(String coordinates)  throws java. io. IOException, InterruptedException {
         if(coordinates==null||coordinates.isBlank())

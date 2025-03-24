@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Getter
 @Setter
@@ -82,4 +83,10 @@ public class AdModel {
         }
     }
 
+    @Getter
+    @Setter
+    public static class DetailEntitiesResponse<T> {
+        private List<T> entities;
+        private String message;
+    }
 }

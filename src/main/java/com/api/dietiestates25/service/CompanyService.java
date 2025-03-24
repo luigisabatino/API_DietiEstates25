@@ -1,13 +1,12 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.CompanyModel;
-import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.request.InsertCompanyRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

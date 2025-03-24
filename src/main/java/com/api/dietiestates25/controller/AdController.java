@@ -4,6 +4,7 @@ import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.request.SearchAdRequest;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
+import com.api.dietiestates25.model.response.DetailEntityResponse;
 import com.api.dietiestates25.service.AdService;
 import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
@@ -11,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
 
 @RestController
 public class AdController {
@@ -27,7 +26,7 @@ public class AdController {
     }
 
     @PostMapping("/insertAd")
-    public ResponseEntity<AdModel> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
+    public ResponseEntity<DetailEntityResponse<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
     {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
@@ -36,31 +35,31 @@ public class AdController {
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             if(response.getCode() > 0)
                 response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));
-            return ResponseEntity.ok(response.getEntities().getFirst());//response.toHttpResponse();
+            return response.toHttpEntitiesResponse();
         }
         catch(Exception ex)
         {
-            return null; //response.toHttpResponse(ex);
+            return response.toHttpEntitiesResponse(ex);
         }
     }
-
     @PutMapping("/searchAd")
-    public ResponseEntity<CodeEntitiesResponse<AdModel>> searchAd(@RequestBody SearchAdRequest request)
-    {
-        try {
-            var adService = new AdService();
-            return ResponseEntity.ok(adService.searchAd(jdbcTemplate, request));
-        }
-        catch(Exception ex)
-        {
-            return null;
-        }
-    }
-
-    @DeleteMapping("/deleteAd")
-    public ResponseEntity<CodeResponse> deleteAd(@RequestHeader String sessionId, @RequestParam int id)
+    public ResponseEntity<DetailEntityResponse<AdModel>> searchAd(@RequestBody SearchAdRequest request)
     {
         var response = new CodeEntitiesResponse<AdModel>();
+        try {
+            var adService = new AdService();
+            response = adService.searchAd(jdbcTemplate, request);
+            return response.toHttpEntitiesResponse();
+        }
+        catch(Exception ex)
+        {
+            return response.toHttpEntitiesResponse(ex);
+        }
+    }
+    @DeleteMapping("/deleteAd")
+    public ResponseEntity<String> deleteAd(@RequestHeader String sessionId, @RequestParam int id)
+    {
+        var response = new CodeResponse();
         try {
             var adService = new AdService();
             response.setCode(adService.deleteAd(jdbcTemplate, sessionId, id));
@@ -68,13 +67,11 @@ public class AdController {
                 ImageService imageService = new ImageService();
                 imageService.deleteImagesByPrefix(id + "_");
             }
-            return response.toHttpResponse();
+            return response.toHttpMessageResponse();
         }
         catch(Exception ex)
         {
-            return response.toHttpResponse(ex);
+            return response.toHttpMessageResponse(ex);
         }
     }
-
-
 }

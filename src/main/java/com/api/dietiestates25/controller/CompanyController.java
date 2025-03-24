@@ -4,7 +4,6 @@ import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.CompanyService;
 import com.api.dietiestates25.model.request.InsertCompanyRequest;
 import com.api.dietiestates25.service.ExternalApiService;
-import com.api.dietiestates25.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +25,20 @@ public class CompanyController {
     }
 
     @PostMapping("/insertCompany")
-    public ResponseEntity<CodeResponse> insertCompany(@RequestBody InsertCompanyRequest request)
+    public ResponseEntity<String> insertCompany(@RequestBody InsertCompanyRequest request)
     {
         var response = new CodeResponse();
         try {
-            if(!apiService.verifyVatNumber(request.getVatNumber())) {
-                response.setCode(-97);
-                response.setMessage("Error: VAT Number not valid");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
+            response.setCode(apiService.verifyVatNumber(request.getVatNumber()));
+            if(response.getCode() != 0)
+                return response.toHttpMessageResponse();
             var companyService = new CompanyService();
             response = companyService.insertCompany(jdbcTemplate, request);
-            return response.toHttpResponse();
+            return response.toHttpMessageResponse();
         }
         catch(Exception ex)
         {
-            return response.toHttpResponse(ex);
+            return response.toHttpMessageResponse(ex);
         }
     }
-
 }

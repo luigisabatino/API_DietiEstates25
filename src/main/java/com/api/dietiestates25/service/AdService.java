@@ -1,7 +1,6 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.request.SearchAdRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;

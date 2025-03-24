@@ -1,7 +1,7 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.request.SearchAdRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
@@ -33,6 +33,11 @@ public class AdService {
         return jdbcTemplate.queryForObject(query, (rs, _) -> {
             return new AdModel(rs);
         }, id);
+    }
+    public int deleteAd(JdbcTemplate jdbcTemplate, String sessionId, int id) {
+        String query = "SELECT * FROM INSERT_AD(?,?)";
+        return ( (jdbcTemplate.queryForObject(query, Integer.class,
+                sessionId, id)));
     }
     public static void requiredValuesForAdOperations(AdModel ad, AdService.Operation operation) {
         if((operation == Operation.InsertAd) && (ad.getPrice()==0))

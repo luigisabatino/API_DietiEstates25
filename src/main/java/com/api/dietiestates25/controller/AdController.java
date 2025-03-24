@@ -6,6 +6,7 @@ import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.AdService;
 import com.api.dietiestates25.service.ExternalApiService;
+import com.api.dietiestates25.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,5 +56,25 @@ public class AdController {
             return null;
         }
     }
+
+    @DeleteMapping("/deleteAd")
+    public ResponseEntity<CodeResponse> deleteAd(@RequestHeader String sessionId, @RequestParam int id)
+    {
+        var response = new CodeEntitiesResponse<AdModel>();
+        try {
+            var adService = new AdService();
+            response.setCode(adService.deleteAd(jdbcTemplate, sessionId, id));
+            if(response.getCode() == 0) {
+                ImageService imageService = new ImageService();
+                imageService.deleteImagesByPrefix(id + "_");
+            }
+            return response.toHttpResponse();
+        }
+        catch(Exception ex)
+        {
+            return response.toHttpResponse(ex);
+        }
+    }
+
 
 }

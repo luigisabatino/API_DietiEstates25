@@ -40,8 +40,7 @@ public class ImageController {
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteAdImage(@RequestParam int idAd) {
         ImageService imageService = new ImageService();
-        imageService.deleteImagesByPrefix(idAd + "_");
-        return ResponseEntity.ok(true);
+        var response = imageService.deleteImagesByPrefix(idAd + "_");
+        return ((response)?ResponseEntity.ok(true) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false));
     }
-
 }

@@ -66,6 +66,7 @@ public class CodeResponse {
                 break;
             case -7:
                 message = "temporary password must be change";
+                break;
             default:
                 if (code > 0) message = "Operation successfull.";
         }

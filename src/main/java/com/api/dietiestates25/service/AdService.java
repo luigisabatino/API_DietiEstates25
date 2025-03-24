@@ -17,13 +17,24 @@ public class AdService {
     }
 
     public CodeEntitiesResponse<AdModel> searchAd(JdbcTemplate jdbcTemplate, SearchAdRequest ad) {
-        requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
         var response = new CodeEntitiesResponse<AdModel>();
+        if(ad.getId() > 0) {
+            response.addInEntities(getAdById(jdbcTemplate, ad.getId()));
+            return response;
+        }
+        requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
         String query = "SELECT * FROM ADS WHERE AGENT LIKE ? AND PRICE >= ? AND PRICE <= ? AND NATION LIKE ? AND COUNTY LIKE ? AND CITY LIKE ? AND ZIPCODE LIKE ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ?";
         response.setEntities(jdbcTemplate.query(query, new Object[]{"%" + ad.getAgent() + "%", ad.getPrice(), ad.getMaxPrice(), "%" + ad.getNation() + "%", "%" + ad.getCounty() + "%", "%" + ad.getCity() + "%", "%" + ad.getZipcode() + "%", "%" + ad.getAddress() + "%", ad.getNRooms(), ad.getNBathrooms(), ad.getType()}, (rs, rowNum) -> {
             return new AdModel(rs);
         }));
         return response;
+    }
+
+    public AdModel getAdById(JdbcTemplate jdbcTemplate, int id) {
+        String query = "SELECT * FROM ADS WHERE ID_AD = ?";
+        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+            return new AdModel(rs);
+        }, id);
     }
 
     public static void requiredValuesForAdOperations(AdModel ad, AdService.Operation operation) {

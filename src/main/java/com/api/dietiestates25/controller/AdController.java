@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+
 @RestController
 public class AdController {
 
@@ -24,18 +26,20 @@ public class AdController {
     }
 
     @PostMapping("/insertAd")
-    public ResponseEntity<CodeResponse> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
+    public ResponseEntity<AdModel> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
     {
-        var response = new CodeResponse();
+        var response = new CodeEntitiesResponse<AdModel>();
         try {
             ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
             var adService = new AdService();
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
-            return response.toHttpResponse();
+            if(response.getCode() > 0)
+                response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));
+            return ResponseEntity.ok(response.getEntities().getFirst());//response.toHttpResponse();
         }
         catch(Exception ex)
         {
-            return response.toHttpResponse(ex);
+            return null; //response.toHttpResponse(ex);
         }
     }
 

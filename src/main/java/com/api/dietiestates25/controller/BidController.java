@@ -18,17 +18,19 @@ public class BidController {
     }
 
     @PostMapping("/insertBid")
-    public ResponseEntity<CodeResponse> insertBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
+    public ResponseEntity<CodeEntitiesResponse<BidModel>> insertBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
     {
-        var response = new CodeResponse();
+        var response = new CodeEntitiesResponse<BidModel>();
         try {
             var bidService = new BidService();
             response.setCode(bidService.insertBid(jdbcTemplate, sessionId, bid));
-            return response.toHttpResponse();
+            if(response.getCode() > 0)
+                response.addInEntities(bidService.getBidFromId(jdbcTemplate, response.getCode()));
+            return ResponseEntity.ok(response);
         }
         catch(Exception ex)
         {
-            return response.toHttpResponse(ex);
+            return null;
         }
     }
 

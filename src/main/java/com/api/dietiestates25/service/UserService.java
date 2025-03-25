@@ -8,6 +8,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserService {
     public UserService() {}
     public CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
@@ -68,13 +71,12 @@ public class UserService {
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
     }
-    public CodeEntitiesResponse<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
-        var response = new CodeEntitiesResponse<UserModel>();
+    public List<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
+        var response = new ArrayList<UserModel>();
         String query = "SELECT * FROM USERS WHERE COMPANY = ? AND CONFIRMED = TRUE";
-        response.setEntities(jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
+        return (jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
             return new UserModel(rs);
         }));
-        return response;
     }
     public UserModel getUserByEmail(JdbcTemplate jdbcTemplate, String email) {
         String query = "SELECT * FROM USERS WHERE EMAIL = ?";

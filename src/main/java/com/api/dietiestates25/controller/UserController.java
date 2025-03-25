@@ -92,7 +92,7 @@ public class UserController {
         var response = new CodeEntitiesResponse<UserModel>();
         try {
             var userService = new UserService();
-            response = userService.getAgentsByCompany(jdbcTemplate, company);
+            response.setEntities(userService.getAgentsByCompany(jdbcTemplate, company));
             return response.toHttpEntitiesResponse();
         }
         catch(Exception ex)

@@ -64,8 +64,7 @@ public class UserService {
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
         requiredValuesForUserOperations(user, Operation.CreateManager);
         //user.encodePwd();
-        String query = "SELECT CREATE_TEMP_AGENT(?,?,?,?,?)";
-        var response = new CodeResponse();
+        String query = "SELECT * FROM CREATE_TEMP_AGENT(?,?,?,?,?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
     }

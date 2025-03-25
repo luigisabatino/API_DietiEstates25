@@ -26,7 +26,7 @@ public class CodeEntitiesResponse<T> extends CodeResponse {
 
     public ResponseEntity<DetailEntityResponse<T>> toHttpEntitiesResponse(Exception ex) {
         setCodeByException(ex);
-        if((getMessage().isBlank()))
+        if((getMessage()==null)||(getMessage().isBlank()))
             setMessageFromCode();
         var response = new DetailEntityResponse<T>();
         response.setMessage(getMessage());

@@ -11,7 +11,7 @@ import com.api.dietiestates25.model.*;
 @Setter
 public class CodeResponse  {
     private int code;
-    private String message = "";
+    private String message;
 
     protected void setMessageFromCode() {
         switch (code) {
@@ -46,8 +46,6 @@ public class CodeResponse  {
         }
     }
     protected HttpStatus httpStatusFromCode() {
-        if (getMessage().isBlank())
-            setMessageFromCode();
         switch (code) {
             case 0:
                 return HttpStatus.OK;
@@ -79,7 +77,8 @@ public class CodeResponse  {
     }
     public ResponseEntity<String> toHttpMessageResponse(Exception ex) {
         setCodeByException(ex);
-        setMessageFromCode();
+        if(message == null || message.isBlank())
+            setMessageFromCode();
         return ResponseEntity.status(httpStatusFromCode()).body(message);
     }
     protected void setCodeByException(Exception ex) {

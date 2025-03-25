@@ -63,7 +63,7 @@ public class UserService {
     }
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
         requiredValuesForUserOperations(user, Operation.CreateManager);
-        user.encodePwd();
+        //user.encodePwd();
         String query = "SELECT CREATE_TEMP_AGENT(?,?,?,?,?)";
         var response = new CodeResponse();
         return (jdbcTemplate.queryForObject(query, Integer.class,
@@ -71,7 +71,7 @@ public class UserService {
     }
     public CodeEntitiesResponse<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
         var response = new CodeEntitiesResponse<UserModel>();
-        String query = "SELECT * FROM USERS WHERE COMPANY = ?";
+        String query = "SELECT * FROM USERS WHERE COMPANY = ? AND CONFIRMED = TRUE";
         response.setEntities(jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
             return new UserModel(rs);
         }));

@@ -53,21 +53,19 @@ public class UserController {
         }
     }
     @PostMapping("/confirmUser")
-    public ResponseEntity<DetailEntityResponse<UserModel>> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
-        CodeEntitiesResponse<UserModel> response = new CodeEntitiesResponse<UserModel>();
+    public ResponseEntity<String> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
+        CodeResponse response = new CodeResponse();
         try {
             var userService = new UserService();
             if(isManagerOrAgent)
                 response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));
             else
                 response.setCode(userService.confirmUser(jdbcTemplate, user));
-            if(response.getCode()>0)
-                response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
-            return response.toHttpEntitiesResponse();
+            return response.toHttpMessageResponse();
         }
         catch(Exception ex)
         {
-            return response.toHttpEntitiesResponse(ex);
+            return response.toHttpMessageResponse(ex);
         }
     }
 
@@ -79,7 +77,7 @@ public class UserController {
             var userService = new UserService();
             response.setCode(userService.createAgent(jdbcTemplate, user, sessionId));
             if(response.getCode()==0)
-                emailService.sendConfirmAccountEmail(user, 'U');
+                emailService.sendConfirmAccountEmail(user, 'A');
             return response.toHttpMessageResponse();
         }
         catch(Exception ex)

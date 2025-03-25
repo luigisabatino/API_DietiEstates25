@@ -9,23 +9,23 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class CompanyService {
     public CodeResponse insertCompany(JdbcTemplate jdbcTemplate, InsertCompanyRequest request) {
         requiredValuesForCompanyOperations(request);
-        UserService.requiredValuesForUserOperations(request.getManager(), UserService.Operation.CreateAgent);
         var manager = request.getManager();
+        manager.setCompany(request.getCompanyName());
         manager.setPwd();
-        var response = new CodeResponse();
+        UserService.requiredValuesForUserOperations(manager, UserService.Operation.CreateAgent);
         String query = "SELECT * FROM CREATE_COMPANY(?,?,?,?,?,?)";
-        return jdbcTemplate.queryForObject(query, new RowMapper<CodeResponse>() {
-            @Override
-            public CodeResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                response.setCode(rs.getInt("response"));
-                response.setMessage(rs.getString("message"));
-                return response;
-            }
-        }, request.getVatNumber(), request.getCompanyName(), manager.getEmail(), manager.getFirstName(), manager.getLastName(), manager.getPwd());
+        Map<String, Object> result = jdbcTemplate.queryForMap(query,
+                request.getVatNumber(), request.getCompanyName(), manager.getEmail(),  manager.getFirstName(), manager.getLastName(), manager.getPwd()
+        );
+        CodeResponse response = new CodeResponse();
+        response.setCode((Integer) result.get("response"));
+        response.setMessage((String) result.get("message"));
+        return response;
     }
 
     private static void requiredValuesForCompanyOperations(CompanyModel company) {

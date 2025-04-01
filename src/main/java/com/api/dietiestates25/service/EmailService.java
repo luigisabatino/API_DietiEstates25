@@ -76,7 +76,7 @@ public class EmailService {
                     "DietiEstates Account Verification",
                     (usertype=='U') ?
                             templateActivationEmailOTP(user.getFirstName(), user.getOtp())
-                            : templateActivationEmailTempPwd(user.getFirstName(), user.getPwd(),(usertype=='A')?"Agent":"Manager")
+                            : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),(usertype=='A')?"Agent":"Manager")
             );
             return true;
         } catch (Exception ex) {

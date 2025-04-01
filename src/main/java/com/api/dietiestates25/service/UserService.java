@@ -58,11 +58,13 @@ public class UserService {
     }
     public int confirmManagerOrAgent(JdbcTemplate jdbcTemplate, UserModel user) {
         requiredValuesForUserOperations(user, Operation.ConfirmManagerOrAgent);
-        user.encodePwd();
+        user.encodeOtp();
+        var pwdInDB = checkPwd(jdbcTemplate, user);
+
         String query = "SELECT * FROM CONFIRM_MANAGERORAGENT(?, ?, ?)";
         var response = new CodeResponse();
         return (jdbcTemplate.queryForObject(query, Integer.class,
-                user.getEmail(), user.getPwd(), user.getOtp()));
+                user.getEmail(), pwdInDB, user.getOtp()));
     }
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
         requiredValuesForUserOperations(user, Operation.CreateManager);
@@ -87,9 +89,9 @@ public class UserService {
     public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
         if(operation != Operation.AgentsByCompany && (user.getEmail() == null || user.getEmail().isBlank()))
             throw new RequiredParameterException("email");
-        if(operation != Operation.ConfirmUser && (user.getPwd() == null || user.getPwd().isBlank()))
+        if(operation == Operation.ConfirmManagerOrAgent && (user.getPwd() == null || user.getPwd().isBlank()))
             throw new RequiredParameterException("pwd");
-        if((operation == Operation.ConfirmUser || operation == Operation.ConfirmManagerOrAgent) && (user.getOtp() == null || user.getOtp().isBlank()))
+        if((operation == Operation.ConfirmUser) && (user.getOtp() == null || user.getOtp().isBlank()))
             throw new RequiredParameterException("otp");
         if((operation == Operation.CreateUser || operation == Operation.CreateAgent) && (user.getFirstName() == null || user.getFirstName().isBlank()))
             throw new RequiredParameterException("firstName");

@@ -13,10 +13,7 @@ import java.util.List;
 public class AdModel {
     private int id;
     private double price;
-    private String nation;
-    private String county;
     private String city;
-    private String zipcode;
     private String address;
     private String agent;
     private int nRooms;
@@ -31,16 +28,20 @@ public class AdModel {
     private boolean publicTransport350m;
     private boolean school350m;
     private boolean leisurePark350m;
+    private boolean privateGarage;
+    private boolean condominiumParking;
+    private boolean doormanService;
+    private boolean airConditioning;
+    private String cityName;
+    private String region;
+    private String province;
 
     public AdModel() { }
     public AdModel(ResultSet rs) {
         try {
             id = rs.getInt("id_ad");
             price = rs.getDouble("price");
-            nation = rs.getString("nation");
-            county = rs.getString("county");
             city = rs.getString("city");
-            zipcode = rs.getString("zipcode");
             address = rs.getString("address");
             agent = rs.getString("agent");
             nRooms = rs.getInt("n_rooms");
@@ -55,6 +56,13 @@ public class AdModel {
             publicTransport350m = rs.getBoolean("publictransport_proximity");
             school350m = rs.getBoolean("school_proximity");
             leisurePark350m = rs.getBoolean("leisurepark_proximity");
+            privateGarage = rs.getBoolean("private_car_garage");
+            condominiumParking = rs.getBoolean("condominium_parking");
+            doormanService = rs.getBoolean("doorman_service");
+            airConditioning = rs.getBoolean("air_conditioning");
+            cityName = rs.getString("city_name");
+            region = rs.getString("region");
+            province = rs.getString("province");
         }
         catch(SQLException ex) {
             //TO DO

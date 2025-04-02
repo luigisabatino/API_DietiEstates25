@@ -6,6 +6,7 @@ import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.DetailEntityResponse;
 import com.api.dietiestates25.service.AdService;
+import com.api.dietiestates25.service.CityService;
 import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class AdController {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             var adService = new AdService();
-            response = adService.searchAd(jdbcTemplate, request);
+            response.setEntities(adService.searchAd(jdbcTemplate, request));
             return response.toHttpEntitiesResponse();
         }
         catch(Exception ex)

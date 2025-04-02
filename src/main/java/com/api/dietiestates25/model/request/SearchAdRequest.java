@@ -12,29 +12,19 @@ public class SearchAdRequest extends AdModel {
     public double getMaxPrice() {
         return ((maxPrice==0) ? Double.MAX_VALUE : maxPrice);
     }
-
     public String getAgent() {
         return ((super.getAgent()==null) ? "" : super.getAgent());
     }
-
-    public String getNation() {
-        return ((super.getNation()==null) ? "" : super.getNation());
+    public String getProvince() {
+        return ((super.getProvince()==null) ? "" : super.getProvince());
     }
-
-    public String getCounty() {
-        return ((super.getCounty()==null) ? "" : super.getCounty());
+    public String getRegion() {
+        return ((super.getRegion()==null) ? "" : super.getRegion());
     }
-
     public String getCity() {
         return ((super.getCity()==null) ? "" : super.getCity());
     }
-
     public String getAddress() {
         return ((super.getAddress()==null) ? "" : super.getAddress());
     }
-
-    public String getZipcode() {
-        return ((super.getZipcode()==null) ? "" : super.getZipcode());
-    }
-
 }

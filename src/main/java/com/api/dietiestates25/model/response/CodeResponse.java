@@ -3,6 +3,7 @@ package com.api.dietiestates25.model.response;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.api.dietiestates25.model.*;
@@ -40,6 +41,9 @@ public class CodeResponse  {
             case -97:
                 message = "Error: VAT Number not valid";
                 break;
+            case -20:
+                message = "Error: ID not valid";
+                break;
             default:
                 if (code > 0) message = "Operation successfull.";
                 break;
@@ -60,7 +64,6 @@ public class CodeResponse  {
             case -6:
             case -97:
             case -98:
-                return HttpStatus.BAD_REQUEST;
             case -7:
                 return HttpStatus.CONTINUE;
             case -99:
@@ -84,12 +87,15 @@ public class CodeResponse  {
     protected void setCodeByException(Exception ex) {
         if(ex != null) {
             if(ex instanceof RequiredParameterException) {
-                setMessage("Error: the parameter " + ex.getMessage() + " is required!");
+                message = "Error: the parameter " + ex.getMessage() + " is required!";
                 code = -98;
+            }
+            else if(ex instanceof EmptyResultDataAccessException) {
+                code = -20;
             }
             else {
                 code = -99;
-                setMessage(ex.toString());
+                message = ex.toString();
             }
         }
     }

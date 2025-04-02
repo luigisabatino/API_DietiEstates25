@@ -26,15 +26,18 @@ public class UserModel {
         lastName = rs.getString("lastName");
         company = rs.getString("company");
     }
+
     public void setPwd() {
-        String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_<>";
+        String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_";
         SecureRandom random = new SecureRandom();
-        String pwdRandom = "";
-        for(int i = 0; i < 10; i++){
-            pwdRandom += alphabet.charAt(random.nextInt(alphabet.length()));
-        }
-        pwd = pwdRandom;
+        StringBuilder pwdRandom = new StringBuilder(10);
+
+        for (int i = 0; i < 10; i++)
+            pwdRandom.append(alphabet.charAt(random.nextInt(alphabet.length())));
+
+        pwd = pwdRandom.toString();
     }
+
     public void setOtp() {
         SecureRandom random = new SecureRandom();
         int _otp = 100000 + random.nextInt(900000);
@@ -43,5 +46,10 @@ public class UserModel {
     public void encodePwd() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));
+    }
+
+    public void encodeOtp() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        setOtp(encoder.encode(otp));
     }
 }

@@ -17,6 +17,8 @@ public class CompanyService {
         var manager = request.getManager();
         manager.setCompany(request.getCompanyName());
         manager.setPwd();
+        manager.setOtp(manager.getPwd());
+        manager.encodePwd();
         UserService.requiredValuesForUserOperations(manager, UserService.Operation.CreateAgent);
         String query = "SELECT * FROM CREATE_COMPANY(?,?,?,?,?,?)";
         Map<String, Object> result = jdbcTemplate.queryForMap(query,

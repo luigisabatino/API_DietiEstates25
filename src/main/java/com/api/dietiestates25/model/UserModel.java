@@ -16,6 +16,7 @@ public class UserModel {
     private String lastName;
     private String company;
     private String otp;
+    private String userType;
 
     public UserModel() { }
 
@@ -25,6 +26,7 @@ public class UserModel {
         firstName = rs.getString("firstName");
         lastName = rs.getString("lastName");
         company = rs.getString("company");
+        userType = rs.getString("usertype");
     }
 
     public void setPwd() {

@@ -2,9 +2,9 @@ package com.api.dietiestates25.model;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import com.api.dietiestates25.model.CounterOfferModel;
 
 @Getter
 @Setter

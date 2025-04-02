@@ -1,6 +1,7 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.model.BidWithCounterofferModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.DetailEntityResponse;
@@ -66,12 +67,12 @@ public class BidController {
     }
 
     @GetMapping("/getBids")
-    public ResponseEntity<DetailEntityResponse<BidModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
+    public ResponseEntity<DetailEntityResponse<BidWithCounterofferModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
     {
-        CodeEntitiesResponse<BidModel> response = new CodeEntitiesResponse<BidModel>();
+        CodeEntitiesResponse<BidWithCounterofferModel> response = new CodeEntitiesResponse<BidWithCounterofferModel>();
         try {
             var bidService = new BidService();
-            response = bidService.getBids(jdbcTemplate, key, value);
+            response.setEntities(bidService.getBids(jdbcTemplate, key, value));
             return response.toHttpEntitiesResponse();
         }
         catch(Exception ex)

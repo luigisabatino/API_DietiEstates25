@@ -1,10 +1,11 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.response.CodeEntitiesResponse;
+import com.api.dietiestates25.model.BidWithCounterofferModel;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BidService {
@@ -35,37 +36,37 @@ public class BidService {
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, coId )));
     }
-    public CodeEntitiesResponse<BidModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
-        var response = new CodeEntitiesResponse<BidModel>();
+    public List<BidWithCounterofferModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
+        List<BidWithCounterofferModel> response = new ArrayList<BidWithCounterofferModel>();
         switch(key) {
             case BidsKey.ad :
-                response.setEntities(getBidsFromAd(jdbcTemplate, Integer.parseInt(value)));
+                response = getBidsFromAd(jdbcTemplate, Integer.parseInt(value));
                 break;
             case BidsKey.bid_id :
-                response.addInEntities(getBidFromId(jdbcTemplate, Integer.parseInt(value)));
+                response.add(getBidFromId(jdbcTemplate, Integer.parseInt(value)));
                 break;
             case BidsKey.offerer :
-                response.setEntities(getBidsFromOfferer(jdbcTemplate, value));
+                response = getBidsFromOfferer(jdbcTemplate, value);
                 break;
         }
         return response;
     }
-    private List<BidModel> getBidsFromAd(JdbcTemplate jdbcTemplate, int ad) {
-        String query = "SELECT * FROM BIDS WHERE AD = ?";
+    private List<BidWithCounterofferModel> getBidsFromAd(JdbcTemplate jdbcTemplate, int ad) {
+        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.AD = ?";
         return (jdbcTemplate.query(query, new Object[]{ad}, (rs, rowNum) -> {
-            return new BidModel(rs);
+            return new BidWithCounterofferModel(rs);
         }));
     }
-    private List<BidModel> getBidsFromOfferer(JdbcTemplate jdbcTemplate, String offerer) {
-        String query = "SELECT * FROM BIDS WHERE OFFERER = ?";
+    private List<BidWithCounterofferModel> getBidsFromOfferer(JdbcTemplate jdbcTemplate, String offerer) {
+        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.OFFERER = ?";
         return (jdbcTemplate.query(query, new Object[]{offerer}, (rs, rowNum) -> {
-            return new BidModel(rs);
+            return new BidWithCounterofferModel(rs);
         }));
     }
-    public BidModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
-        String query = "SELECT * FROM BIDS WHERE BID_ID = ?";
+    public BidWithCounterofferModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
+        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.BID_ID = ?";
         return jdbcTemplate.queryForObject(query, (rs, _) -> {
-            return new BidModel(rs);
+            return new BidWithCounterofferModel(rs);
         }, id);
     }
     public static void requiredValuesForBidOperations(BidModel bid, BidService.Operation operation) {

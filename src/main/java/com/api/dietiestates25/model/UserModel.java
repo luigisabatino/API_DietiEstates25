@@ -1,5 +1,8 @@
 package com.api.dietiestates25.model;
 
+import com.api.dietiestates25.model.dto.User.ConfirmUserDTO;
+import com.api.dietiestates25.model.dto.User.CreateUserDTO;
+import com.api.dietiestates25.model.dto.User.LoginDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +22,6 @@ public class UserModel {
     private String userType;
 
     public UserModel() { }
-
     public UserModel(ResultSet rs) throws SQLException {
         email = rs.getString("email");
         //pwd = rs.getString("pwd");
@@ -28,7 +30,22 @@ public class UserModel {
         company = rs.getString("company");
         userType = rs.getString("usertype");
     }
-
+    public UserModel(LoginDTO loginDTO) {
+        email = loginDTO.getEmail();
+        pwd = loginDTO.getPwd();
+    }
+    public UserModel(CreateUserDTO createUserDTO) {
+        email = createUserDTO.getEmail();
+        pwd = createUserDTO.getPwd();
+        firstName = createUserDTO.getFirstName();
+        lastName = createUserDTO.getLastName();
+        otp = createUserDTO.getOtp();
+    }
+    public UserModel(ConfirmUserDTO confirmUserDTO) {
+        email = confirmUserDTO.getEmail();
+        pwd = confirmUserDTO.getPwd();
+        otp = confirmUserDTO.getTemporaryPwd();
+    }
     public void setPwd() {
         String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_";
         SecureRandom random = new SecureRandom();
@@ -39,7 +56,6 @@ public class UserModel {
 
         pwd = pwdRandom.toString();
     }
-
     public void setOtp() {
         SecureRandom random = new SecureRandom();
         int _otp = 100000 + random.nextInt(900000);
@@ -49,7 +65,6 @@ public class UserModel {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setPwd(encoder.encode(pwd));
     }
-
     public void encodeOtp() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         setOtp(encoder.encode(otp));

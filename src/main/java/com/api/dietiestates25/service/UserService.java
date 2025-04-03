@@ -67,7 +67,7 @@ public class UserService {
                 user.getEmail(), pwdInDB, user.getOtp()));
     }
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
-        requiredValuesForUserOperations(user, Operation.CreateManager);
+        requiredValuesForUserOperations(user, Operation.CreateAgent);
         //user.encodePwd();
         String query = "SELECT * FROM CREATE_TEMP_AGENT(?,?,?,?,?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
@@ -103,7 +103,6 @@ public class UserService {
     public enum Operation {
         CreateUser,
         CreateAgent,
-        CreateManager,
         Login,
         ConfirmManagerOrAgent,
         ConfirmUser,

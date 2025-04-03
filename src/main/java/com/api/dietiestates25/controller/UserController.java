@@ -1,5 +1,7 @@
 package com.api.dietiestates25.controller;
 
+import com.api.dietiestates25.model.dto.User.CreateUserDTO;
+import com.api.dietiestates25.model.dto.User.LoginDTO;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.UserModel;
@@ -22,9 +24,9 @@ public class UserController {
     public UserController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
     @PostMapping("/login")
-    public ResponseEntity<DetailEntityResponse<UserModel>> login(@RequestBody UserModel user) {
+    public ResponseEntity<DetailEntityResponse<UserModel>> login(@RequestBody LoginDTO dto) {
+        UserModel user = new UserModel(dto);
         var response = new CodeEntitiesResponse<UserModel>();
         try {
             var userService = new UserService();
@@ -38,7 +40,8 @@ public class UserController {
         }
     }
     @PostMapping("/createUser")
-    public ResponseEntity<String> createUser(@RequestBody UserModel user) {
+    public ResponseEntity<String> createUser(@RequestBody CreateUserDTO dto) {
+        UserModel user = new UserModel(dto);
         var response = new CodeResponse();
         try {
             var userService = new UserService();
@@ -53,7 +56,8 @@ public class UserController {
         }
     }
     @PostMapping("/confirmUser")
-    public ResponseEntity<String> confirmUser(boolean isManagerOrAgent, @RequestBody UserModel user) {
+    public ResponseEntity<String> confirmUser(boolean isManagerOrAgent, @RequestBody CreateUserDTO dto) {
+        UserModel user = new UserModel(dto);
         CodeResponse response = new CodeResponse();
         try {
             var userService = new UserService();
@@ -68,9 +72,9 @@ public class UserController {
             return response.toHttpMessageResponse(ex);
         }
     }
-
     @PostMapping("/createAgent")
-    public ResponseEntity<String> createAgent(@RequestBody UserModel user, @RequestHeader String sessionId) {
+    public ResponseEntity<String> createAgent(@RequestBody CreateUserDTO dto, @RequestHeader String sessionId) {
+        UserModel user = new UserModel(dto);
         CodeResponse response = new CodeResponse();
         try {
             user.setPwd();
@@ -85,7 +89,6 @@ public class UserController {
             return response.toHttpMessageResponse(ex);
         }
     }
-
     @GetMapping("/getAgentsByCompany")
     public ResponseEntity<DetailEntityResponse<UserModel>> getAgentsByCompany(@RequestParam String company)
     {

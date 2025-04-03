@@ -2,11 +2,10 @@ package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.CompanyService;
-import com.api.dietiestates25.model.request.InsertCompanyRequest;
+import com.api.dietiestates25.model.extention.InsertCompanyRequest;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.ExternalApiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;

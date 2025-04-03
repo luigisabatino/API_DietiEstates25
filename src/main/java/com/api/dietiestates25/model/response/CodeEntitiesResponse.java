@@ -1,12 +1,11 @@
 package com.api.dietiestates25.model.response;
 
-import com.api.dietiestates25.throwable.RequiredParameterException;
+import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 @Getter
 @Setter
@@ -24,16 +23,16 @@ public class CodeEntitiesResponse<T> extends CodeResponse {
         entities.add(value);
     }
 
-    public ResponseEntity<DetailEntityResponse<T>> toHttpEntitiesResponse(Exception ex) {
+    public ResponseEntity<DetailEntityDTO<T>> toHttpEntitiesResponse(Exception ex) {
         setCodeByException(ex);
         if((getMessage()==null)||(getMessage().isBlank()))
             setMessageFromCode();
-        var response = new DetailEntityResponse<T>();
+        var response = new DetailEntityDTO<T>();
         response.setMessage(getMessage());
         response.setEntities(entities);
         return ResponseEntity.status(httpStatusFromCode()).body(response);
     }
-    public ResponseEntity<DetailEntityResponse<T>> toHttpEntitiesResponse() {
+    public ResponseEntity<DetailEntityDTO<T>> toHttpEntitiesResponse() {
         return toHttpEntitiesResponse(null);
     }
 }

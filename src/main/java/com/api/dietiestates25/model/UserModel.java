@@ -1,8 +1,8 @@
 package com.api.dietiestates25.model;
 
-import com.api.dietiestates25.model.dto.User.ConfirmUserDTO;
-import com.api.dietiestates25.model.dto.User.CreateUserDTO;
-import com.api.dietiestates25.model.dto.User.LoginDTO;
+import com.api.dietiestates25.model.dto.user.ConfirmUserDTO;
+import com.api.dietiestates25.model.dto.user.CreateUserDTO;
+import com.api.dietiestates25.model.dto.user.LoginDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

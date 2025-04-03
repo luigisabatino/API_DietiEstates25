@@ -1,13 +1,12 @@
 package com.api.dietiestates25.model;
 
-import com.api.dietiestates25.model.dto.Ad.InsertAdDTO;
+import com.api.dietiestates25.model.dto.ad.InsertAdDTO;
 import com.api.dietiestates25.model.response.GeoapifyResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 @Getter
 @Setter

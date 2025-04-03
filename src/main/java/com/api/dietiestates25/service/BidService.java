@@ -1,7 +1,7 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.BidWithCounterofferModel;
+import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
 

@@ -1,4 +1,4 @@
-package com.api.dietiestates25.model.dto.Ad;
+package com.api.dietiestates25.model.dto.ad;
 
 import lombok.Getter;
 import lombok.Setter;

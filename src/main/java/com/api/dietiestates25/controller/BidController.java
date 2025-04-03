@@ -1,10 +1,10 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.BidModel;
-import com.api.dietiestates25.model.BidWithCounterofferModel;
+import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
-import com.api.dietiestates25.model.response.DetailEntityResponse;
+import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.BidService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +20,7 @@ public class BidController {
     }
 
     @PostMapping("/insertBid")
-    public ResponseEntity<DetailEntityResponse<BidModel>> insertBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
+    public ResponseEntity<DetailEntityDTO<BidModel>> insertBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
     {
         var response = new CodeEntitiesResponse<BidModel>();
         try {
@@ -67,7 +67,7 @@ public class BidController {
     }
 
     @GetMapping("/getBids")
-    public ResponseEntity<DetailEntityResponse<BidWithCounterofferModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
+    public ResponseEntity<DetailEntityDTO<BidWithCounterofferModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
     {
         CodeEntitiesResponse<BidWithCounterofferModel> response = new CodeEntitiesResponse<BidWithCounterofferModel>();
         try {

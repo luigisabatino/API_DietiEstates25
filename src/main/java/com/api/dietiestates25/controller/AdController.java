@@ -1,13 +1,12 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.dto.Ad.InsertAdDTO;
-import com.api.dietiestates25.model.request.SearchAdRequest;
+import com.api.dietiestates25.model.dto.ad.InsertAdDTO;
+import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.DetailEntityResponse;
+import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.AdService;
-import com.api.dietiestates25.service.CityService;
 import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class AdController {
         this.jdbcTemplate = jdbcTemplate;
     }
     @PostMapping("/insertAd")
-    public ResponseEntity<DetailEntityResponse<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
+    public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
     {
         AdModel ad = new AdModel(dto);
         var response = new CodeEntitiesResponse<AdModel>();
@@ -45,7 +44,7 @@ public class AdController {
         }
     }
     @PutMapping("/searchAd")
-    public ResponseEntity<DetailEntityResponse<AdModel>> searchAd(@RequestBody SearchAdRequest request)
+    public ResponseEntity<DetailEntityDTO<AdModel>> searchAd(@RequestBody SearchAdRequest request)
     {
         var response = new CodeEntitiesResponse<AdModel>();
         try {

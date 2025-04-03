@@ -1,4 +1,6 @@
-package com.api.dietiestates25.model;
+package com.api.dietiestates25.model.extention;
+import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.model.CounterOfferModel;
 import lombok.Getter;
 import lombok.Setter;
 

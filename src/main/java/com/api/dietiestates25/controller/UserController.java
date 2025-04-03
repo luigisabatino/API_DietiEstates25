@@ -1,11 +1,11 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.dto.User.CreateUserDTO;
-import com.api.dietiestates25.model.dto.User.LoginDTO;
+import com.api.dietiestates25.model.dto.user.CreateUserDTO;
+import com.api.dietiestates25.model.dto.user.LoginDTO;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.UserModel;
-import com.api.dietiestates25.model.response.DetailEntityResponse;
+import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class UserController {
         this.jdbcTemplate = jdbcTemplate;
     }
     @PostMapping("/login")
-    public ResponseEntity<DetailEntityResponse<UserModel>> login(@RequestBody LoginDTO dto) {
+    public ResponseEntity<DetailEntityDTO<UserModel>> login(@RequestBody LoginDTO dto) {
         UserModel user = new UserModel(dto);
         var response = new CodeEntitiesResponse<UserModel>();
         try {
@@ -90,7 +90,7 @@ public class UserController {
         }
     }
     @GetMapping("/getAgentsByCompany")
-    public ResponseEntity<DetailEntityResponse<UserModel>> getAgentsByCompany(@RequestParam String company)
+    public ResponseEntity<DetailEntityDTO<UserModel>> getAgentsByCompany(@RequestParam String company)
     {
         var response = new CodeEntitiesResponse<UserModel>();
         try {

@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
-import com.api.dietiestates25.model.ImageModel;
+import com.api.dietiestates25.model.dto.ImageDTO;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.ByteArrayInputStream;
@@ -38,7 +38,7 @@ public class ImageService {
                 .build();
     }
 
-    public void uploadImage(ImageModel request) {
+    public void uploadImage(ImageDTO request) {
         byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
         InputStream inputStream = new ByteArrayInputStream(imageBytes);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -47,25 +47,25 @@ public class ImageService {
         client.putObject(imageBucket, request.getFileName(), inputStream, metadata);
     }
 
-    public List<ImageModel> getImagesByPrefix(String prefix) throws Exception {
+    public List<ImageDTO> getImagesByPrefix(String prefix) throws Exception {
         ListObjectsV2Request request = new ListObjectsV2Request()
                 .withBucketName(imageBucket)
                 .withPrefix(prefix);
         ListObjectsV2Result result = client.listObjectsV2(request);
-        List<ImageModel> images = new ArrayList<>();
+        List<ImageDTO> images = new ArrayList<>();
         for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
             S3Object s3Object = client.getObject(imageBucket, objectSummary.getKey());
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
             byte[] bytes = IOUtils.toByteArray(inputStream);
             String base64Image = Base64.getEncoder().encodeToString(bytes);
-            images.add(new ImageModel(objectSummary.getKey(), base64Image));
+            images.add(new ImageDTO(objectSummary.getKey(), base64Image));
         }
         return images;
     }
 
     public boolean deleteImagesByPrefix(String prefix) {
         try {
-            List<ImageModel> images = getImagesByPrefix(prefix);
+            List<ImageDTO> images = getImagesByPrefix(prefix);
             for(var img : images) {
                 deleteImg(img.getFileName());
             }

@@ -1,4 +1,4 @@
-package com.api.dietiestates25.model.request;
+package com.api.dietiestates25.model.extention;
 
 import com.api.dietiestates25.model.AdModel;
 

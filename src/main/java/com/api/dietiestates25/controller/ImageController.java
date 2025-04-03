@@ -1,8 +1,7 @@
 package com.api.dietiestates25.controller;
 
-import com.api.dietiestates25.model.ImageModel;
+import com.api.dietiestates25.model.dto.ImageDTO;
 import com.api.dietiestates25.service.ImageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import java.util.List;
 public class ImageController {
 
     @PostMapping("/uploadImage")
-    public ResponseEntity<String> uploadImage(@RequestBody ImageModel request) {
+    public ResponseEntity<String> uploadImage(@RequestBody ImageDTO request) {
         try {
             ImageService imageService = new ImageService();
             imageService.uploadImage(request);
@@ -27,7 +26,7 @@ public class ImageController {
     }
 
     @GetMapping("/getImagesByAd")
-    public ResponseEntity<List<ImageModel>> getAdImages(@RequestParam int idAd) {
+    public ResponseEntity<List<ImageDTO>> getAdImages(@RequestParam int idAd) {
         try {
             ImageService imageService = new ImageService();
             return ResponseEntity.ok(imageService.getImagesByPrefix(idAd + "_"));

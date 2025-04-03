@@ -1,5 +1,6 @@
 package com.api.dietiestates25.controller;
 
+import com.api.dietiestates25.model.CityModel;
 import com.api.dietiestates25.service.CityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class CityController {
         }
     }
     @GetMapping("/getCities")
-    public ResponseEntity<List<String>> getCities(String province)
+    public ResponseEntity<List<CityModel>> getCities(String province)
     {
         try {
             CityService cityService = new CityService();

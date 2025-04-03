@@ -1,6 +1,7 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.AdModel;
+import com.api.dietiestates25.model.dto.Ad.InsertAdDTO;
 import com.api.dietiestates25.model.request.SearchAdRequest;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
@@ -25,10 +26,10 @@ public class AdController {
     public AdController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
     @PostMapping("/insertAd")
-    public ResponseEntity<DetailEntityResponse<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody AdModel ad)
+    public ResponseEntity<DetailEntityResponse<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
     {
+        AdModel ad = new AdModel(dto);
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));

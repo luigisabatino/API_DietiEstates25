@@ -1,5 +1,6 @@
 package com.api.dietiestates25.model;
 
+import com.api.dietiestates25.model.dto.Ad.InsertAdDTO;
 import com.api.dietiestates25.model.response.GeoapifyResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,27 @@ public class AdModel {
     private String province;
 
     public AdModel() { }
+    public AdModel(InsertAdDTO insertAdDTO) {
+        price = insertAdDTO.getPrice();
+        city = insertAdDTO.getCity();
+        address = insertAdDTO.getAddress();
+        nRooms = insertAdDTO.getNRooms();
+        nBathrooms = insertAdDTO.getNBathrooms();
+        floor = insertAdDTO.getFloor();
+        lift = insertAdDTO.isLift();
+        energyClass = insertAdDTO.getEnergyClass();
+        description = insertAdDTO.getDescription();
+        type = insertAdDTO.getType();
+        dimentions = insertAdDTO.getDimentions();
+        coordinates = insertAdDTO.getCoordinates();
+        publicTransport350m = insertAdDTO.isPublicTransport350m();
+        school350m = insertAdDTO.isSchool350m();
+        leisurePark350m = insertAdDTO.isLeisurePark350m();
+        privateGarage = insertAdDTO.isPrivateGarage();
+        condominiumParking = insertAdDTO.isCondominiumParking();
+        doormanService = insertAdDTO.isDoormanService();
+        airConditioning = insertAdDTO.isAirConditioning();
+    }
     public AdModel(ResultSet rs) {
         try {
             id = rs.getInt("id_ad");
@@ -68,7 +90,6 @@ public class AdModel {
             //TO DO
         }
     }
-
     public void valorizePlacesInterest(GeoapifyResponse geoResponse) {
         for(var feature : geoResponse.getFeatures()) {
             if(feature.getProperties()!=null) {
@@ -89,12 +110,5 @@ public class AdModel {
                 }
             }
         }
-    }
-
-    @Getter
-    @Setter
-    public static class DetailEntitiesResponse<T> {
-        private List<T> entities;
-        private String message;
     }
 }

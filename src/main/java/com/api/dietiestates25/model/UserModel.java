@@ -20,6 +20,7 @@ public class UserModel {
     private String company;
     private String otp;
     private String userType;
+    private boolean confirmed;
 
     public UserModel() { }
     public UserModel(ResultSet rs) throws SQLException {
@@ -29,6 +30,7 @@ public class UserModel {
         lastName = rs.getString("lastName");
         company = rs.getString("company");
         userType = rs.getString("usertype");
+        confirmed = rs.getBoolean("confirmed");
     }
     public UserModel(LoginDTO loginDTO) {
         email = loginDTO.getEmail();

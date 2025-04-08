@@ -1,5 +1,6 @@
 package com.api.dietiestates25.model;
 
+import com.api.dietiestates25.model.dto.counteroffer.AcceptOrRefuseCounterofferDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,8 +26,10 @@ public class CounterOfferModel{
             //TO DO
         }
     }
-    public CounterOfferModel(ResultSet rs) {
-        this(rs,false);
+    public CounterOfferModel(AcceptOrRefuseCounterofferDTO arDto) {
+        status = arDto.getStatus();
+        id = arDto.getId();
     }
+
 
 }

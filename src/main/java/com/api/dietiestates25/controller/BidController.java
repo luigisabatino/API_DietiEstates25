@@ -1,6 +1,9 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.model.CounterOfferModel;
+import com.api.dietiestates25.model.dto.bid.AcceptOrRefuseBidDTO;
+import com.api.dietiestates25.model.dto.counteroffer.AcceptOrRefuseCounterofferDTO;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
@@ -36,14 +39,13 @@ public class BidController {
         }
     }
     @PutMapping("/cancelBid")
-    public ResponseEntity<String> cancelBid(@RequestHeader String sessionId, @RequestParam int bidId, boolean isCounteroffer)
+    public ResponseEntity<String> cancelBid(@RequestHeader String sessionId, @RequestParam int bidId)
     {
         var response = new CodeResponse();
         try {
             var bidService = new BidService();
-            response.setCode((isCounteroffer)? bidService.cancelCounteroffer(jdbcTemplate, sessionId, bidId)
-                    : bidService.cancelBid(jdbcTemplate, sessionId, bidId));
-            return response.toHttpMessageResponse();
+            response.setCode(bidService.cancelBid(jdbcTemplate, sessionId, bidId));
+             return response.toHttpMessageResponse();
         }
         catch(Exception ex)
         {
@@ -51,13 +53,13 @@ public class BidController {
         }
     }
     @PutMapping("/acceptOrRefuseBid")
-    public ResponseEntity<String> acceptOrRefuseBid(@RequestHeader String sessionId, @RequestBody BidModel bid, boolean isCounteroffer)
+    public ResponseEntity<String> acceptOrRefuseBid(@RequestHeader String sessionId, @RequestBody AcceptOrRefuseBidDTO dto)
     {
+        BidModel bid = new BidModel(dto);
         var response = new CodeResponse();
         try {
             var bidService = new BidService();
-            response.setCode((isCounteroffer)? bidService.refuseCounteroffer(jdbcTemplate, sessionId, bid.getId())
-                    : bidService.acceptOrRefuseBid(jdbcTemplate, sessionId, bid));
+            response.setCode(bidService.acceptOrRefuseBid(jdbcTemplate, sessionId, bid));
             return response.toHttpMessageResponse();
         }
         catch(Exception ex)
@@ -65,7 +67,35 @@ public class BidController {
             return response.toHttpMessageResponse(ex);
         }
     }
-
+    @PutMapping("/cancelCounteroffer")
+    public ResponseEntity<String> cancelCounteroffer(@RequestHeader String sessionId, int coId)
+    {
+        var response = new CodeResponse();
+        try {
+            var bidService = new BidService();
+            response.setCode(bidService.cancelCounteroffer(jdbcTemplate, sessionId, coId));
+            return response.toHttpMessageResponse();
+        }
+        catch(Exception ex)
+        {
+            return response.toHttpMessageResponse(ex);
+        }
+    }
+    @PutMapping("/acceptOrRefuseCounteroffer")
+    public ResponseEntity<String> acceptOrRefuseCounteroffer(@RequestHeader String sessionId, @RequestBody AcceptOrRefuseCounterofferDTO dto)
+    {
+        CounterOfferModel co = new CounterOfferModel(dto);
+        var response = new CodeResponse();
+        try {
+            var bidService = new BidService();
+            response.setCode(bidService.acceptOrRefuseCounteroffer(jdbcTemplate, sessionId, co));
+            return response.toHttpMessageResponse();
+        }
+        catch(Exception ex)
+        {
+            return response.toHttpMessageResponse(ex);
+        }
+    }
     @GetMapping("/getBids")
     public ResponseEntity<DetailEntityDTO<BidWithCounterofferModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
     {

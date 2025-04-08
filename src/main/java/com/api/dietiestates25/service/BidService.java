@@ -1,6 +1,7 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.BidModel;
+import com.api.dietiestates25.model.CounterOfferModel;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,10 +32,10 @@ public class BidService {
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, coId )));
     }
-    public int refuseCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, int coId) {
-        String query = "SELECT * FROM REFUSE_Counteroffer(?, ?)";
+    public int acceptOrRefuseCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, CounterOfferModel co) {
+        String query = "SELECT * FROM ACCEPT_REFUSE_Counteroffer(?, ?,?)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
-                sessionId, coId )));
+                sessionId, co.getId(), co.getStatus() )));
     }
     public List<BidWithCounterofferModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
         List<BidWithCounterofferModel> response = new ArrayList<BidWithCounterofferModel>();
@@ -70,7 +71,7 @@ public class BidService {
         }, id);
     }
     public static void requiredValuesForBidOperations(BidModel bid, BidService.Operation operation) {
-        if(operation == Operation.AcceptOrRefuseBid && (bid.getId()==0))
+        if((operation == Operation.AcceptOrRefuseBid||operation == Operation.AcceptOrRefuseCounteroffer) && (bid.getId()==0))
             throw new RequiredParameterException("bid_id");
         if((operation == Operation.AcceptOrRefuseBid || operation == Operation.InsertBid) && (bid.getAgentMessage()==null))
             bid.setAgentMessage("");
@@ -80,12 +81,13 @@ public class BidService {
             throw new RequiredParameterException("ad");
         if((operation == Operation.InsertBid) && ((bid.getAmount()==0)))
             throw new RequiredParameterException("amount");
-        if((operation == Operation.AcceptOrRefuseBid) && (bid.getStatus().isBlank() || bid.getStatus().isBlank()))
+        if((operation == Operation.AcceptOrRefuseBid || operation == Operation.AcceptOrRefuseCounteroffer) && (bid.getStatus().isBlank() || bid.getStatus().isBlank()))
             throw new RequiredParameterException("status");
     }
     public enum Operation {
         AcceptOrRefuseBid,
-        InsertBid;
+        InsertBid,
+        AcceptOrRefuseCounteroffer;
     }
     public enum BidsKey {
         ad,

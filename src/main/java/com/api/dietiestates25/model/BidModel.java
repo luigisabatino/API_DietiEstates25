@@ -1,10 +1,11 @@
 package com.api.dietiestates25.model;
 
+import com.api.dietiestates25.model.dto.bid.AcceptOrRefuseBidDTO;
+import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import lombok.Getter;
 import lombok.Setter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.api.dietiestates25.model.CounterOfferModel;
 
 @Getter
 @Setter
@@ -28,5 +29,17 @@ public class BidModel {
         catch(SQLException ex) {
             //TO DO
         }
+    }
+    public BidModel(InsertBidDTO insertDto) {
+        agentMessage = insertDto.getAgentMessage();
+        offererMessage = insertDto.getOffererMessage();
+        ad = insertDto.getAd();
+        amount = insertDto.getAmount();
+    }
+    public BidModel(AcceptOrRefuseBidDTO arDto) {
+        agentMessage = arDto.getAgentMessage();
+        offererMessage = arDto.getOffererMessage();
+        id = arDto.getId();
+        amount = arDto.getAmount();
     }
 }

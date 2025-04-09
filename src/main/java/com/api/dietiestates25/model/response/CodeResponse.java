@@ -64,6 +64,7 @@ public class CodeResponse  {
             case -6:
             case -97:
             case -98:
+                return HttpStatus.BAD_REQUEST;
             case -7:
                 return HttpStatus.CONTINUE;
             case -99:

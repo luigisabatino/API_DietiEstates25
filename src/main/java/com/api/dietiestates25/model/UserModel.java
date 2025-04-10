@@ -21,6 +21,7 @@ public class UserModel {
     private String otp;
     private String userType;
     private boolean confirmed;
+    private String companyName;
 
     public UserModel() { }
     public UserModel(ResultSet rs) throws SQLException {
@@ -31,6 +32,7 @@ public class UserModel {
         company = rs.getString("company");
         userType = rs.getString("usertype");
         confirmed = rs.getBoolean("confirmed");
+        companyName = rs.getString("companyname");
     }
     public UserModel(LoginDTO loginDTO) {
         email = loginDTO.getEmail();

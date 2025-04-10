@@ -99,7 +99,7 @@ public class UserService {
             throw new RequiredParameterException("firstName");
         if((operation == Operation.CreateUser || operation == Operation.CreateAgent) && (user.getLastName() == null || user.getLastName().isBlank()))
             throw new RequiredParameterException("lastName");
-        if((operation == Operation.CreateAgent || operation == Operation.AgentsByCompany) && (user.getCompany() == null || user.getCompany().isBlank()))
+        if((operation == Operation.AgentsByCompany) && (user.getCompany() == null || user.getCompany().isBlank()))
             throw new RequiredParameterException("company");
     }
     public enum Operation {

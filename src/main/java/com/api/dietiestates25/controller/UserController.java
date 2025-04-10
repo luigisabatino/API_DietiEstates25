@@ -97,4 +97,15 @@ public class UserController {
             return response.toHttpEntitiesResponse(ex);
         }
     }
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam String sessionId) {
+        var response = new CodeResponse();
+        try {
+            response.setCode( (userService.logout(jdbcTemplate, sessionId) ? 0 : -1) );
+            return response.toHttpMessageResponse();
+        }
+        catch(Exception ex) {
+            return response.toHttpMessageResponse(ex);
+        }
+    }
 }

@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdController {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ExternalApiService apiService;
-
-    public AdController(JdbcTemplate jdbcTemplate) {
+    private final ExternalApiService apiService;
+    private final AdService adService;
+    public AdController(JdbcTemplate jdbcTemplate, ExternalApiService apiService, AdService adService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.apiService = apiService;
+        this.adService = adService;
     }
     @PostMapping("/insertAd")
     public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
@@ -32,7 +32,6 @@ public class AdController {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
-            var adService = new AdService();
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             if(response.getCode() > 0)
                 response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));
@@ -48,7 +47,6 @@ public class AdController {
     {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
-            var adService = new AdService();
             response.setEntities(adService.searchAd(jdbcTemplate, request));
             return response.toHttpEntitiesResponse();
         }
@@ -62,7 +60,6 @@ public class AdController {
     {
         var response = new CodeResponse();
         try {
-            var adService = new AdService();
             response.setCode(adService.deleteAd(jdbcTemplate, sessionId, id));
             if(response.getCode() == 0) {
                 ImageService imageService = new ImageService();

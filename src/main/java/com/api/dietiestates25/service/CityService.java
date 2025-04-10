@@ -2,9 +2,11 @@ package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.CityModel;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class CityService {
 
     public List<String> getItalianRegions(JdbcTemplate jdbcTemplate) {

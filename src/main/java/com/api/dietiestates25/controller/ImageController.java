@@ -11,11 +11,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/image-controller")
 public class ImageController {
-
+    private final ImageService imageService;
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
+    }
     @PostMapping("/uploadImage")
     public ResponseEntity<String> uploadImage(@RequestBody ImageDTO request) {
         try {
-            ImageService imageService = new ImageService();
             imageService.uploadImage(request);
             return ResponseEntity.ok("Ok");
         } catch (IllegalArgumentException e) {
@@ -24,21 +26,17 @@ public class ImageController {
             return ResponseEntity.internalServerError().body("File upload failed: " + e.getMessage());
         }
     }
-
     @GetMapping("/getImagesByAd")
     public ResponseEntity<List<ImageDTO>> getAdImages(@RequestParam int idAd) {
         try {
-            ImageService imageService = new ImageService();
             return ResponseEntity.ok(imageService.getImagesByPrefix(idAd + "_"));
         }
         catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteAdImage(@RequestParam int idAd) {
-        ImageService imageService = new ImageService();
         var response = imageService.deleteImagesByPrefix(idAd + "_");
         return ((response)?ResponseEntity.ok(true) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false));
     }

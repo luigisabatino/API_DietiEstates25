@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class BidController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final BidService bidService;
 
-    public BidController(JdbcTemplate jdbcTemplate) {
+    public BidController(JdbcTemplate jdbcTemplate, BidService bidService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.bidService = bidService;
     }
 
     @PostMapping("/insertBid")
@@ -27,7 +29,6 @@ public class BidController {
     {
         var response = new CodeEntitiesResponse<BidModel>();
         try {
-            var bidService = new BidService();
             response.setCode(bidService.insertBid(jdbcTemplate, sessionId, bid));
             if(response.getCode() > 0)
                 response.addInEntities(bidService.getBidFromId(jdbcTemplate, response.getCode()));
@@ -43,7 +44,6 @@ public class BidController {
     {
         var response = new CodeResponse();
         try {
-            var bidService = new BidService();
             response.setCode(bidService.cancelBid(jdbcTemplate, sessionId, bidId));
              return response.toHttpMessageResponse();
         }
@@ -58,7 +58,6 @@ public class BidController {
         BidModel bid = new BidModel(dto);
         var response = new CodeResponse();
         try {
-            var bidService = new BidService();
             response.setCode(bidService.acceptOrRefuseBid(jdbcTemplate, sessionId, bid));
             return response.toHttpMessageResponse();
         }
@@ -72,7 +71,6 @@ public class BidController {
     {
         var response = new CodeResponse();
         try {
-            var bidService = new BidService();
             response.setCode(bidService.cancelCounteroffer(jdbcTemplate, sessionId, coId));
             return response.toHttpMessageResponse();
         }
@@ -87,7 +85,6 @@ public class BidController {
         CounterOfferModel co = new CounterOfferModel(dto);
         var response = new CodeResponse();
         try {
-            var bidService = new BidService();
             response.setCode(bidService.acceptOrRefuseCounteroffer(jdbcTemplate, sessionId, co));
             return response.toHttpMessageResponse();
         }
@@ -101,7 +98,6 @@ public class BidController {
     {
         CodeEntitiesResponse<BidWithCounterofferModel> response = new CodeEntitiesResponse<BidWithCounterofferModel>();
         try {
-            var bidService = new BidService();
             response.setEntities(bidService.getBids(jdbcTemplate, key, value));
             return response.toHttpEntitiesResponse();
         }

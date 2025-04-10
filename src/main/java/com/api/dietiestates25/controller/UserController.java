@@ -18,12 +18,11 @@ public class UserController {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserService userService;
-    private EmailService emailService;
-
-    public UserController(JdbcTemplate jdbcTemplate, UserService userService, EmailService emailService) {
+    private final EmailService emailService;
+    public UserController(JdbcTemplate jdbcTemplate,UserService userService, EmailService emailService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userService = userService;
         this.emailService = emailService;
+        this.userService = userService;
     }
     @PostMapping("/login")
     public ResponseEntity<DetailEntityDTO<UserModel>> login(@RequestBody LoginDTO dto) {

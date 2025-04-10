@@ -7,10 +7,12 @@ import com.api.dietiestates25.model.UserModel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UserService {
     public UserService() {}
     public CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user) {

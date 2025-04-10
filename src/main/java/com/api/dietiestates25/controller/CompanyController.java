@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompanyController {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ExternalApiService apiService;
-
-    public CompanyController(JdbcTemplate jdbcTemplate) {
+    private final EmailService emailService;
+    private final ExternalApiService apiService;
+    private final CompanyService companyService;
+    public CompanyController(JdbcTemplate jdbcTemplate, EmailService emailService, ExternalApiService apiService, CompanyService companyService)
+    {
         this.jdbcTemplate = jdbcTemplate;
+        this.emailService = emailService;
+        this.apiService = apiService;
+        this.companyService = companyService;
     }
 
     @PostMapping("/insertCompany")
@@ -35,7 +35,6 @@ public class CompanyController {
             response.setCode(apiService.verifyVatNumber(request.getVatNumber()));
             if(response.getCode() != 0)
                 return response.toHttpMessageResponse();
-            var companyService = new CompanyService();
             response = companyService.insertCompany(jdbcTemplate, request);
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(request.getManager(), 'M');

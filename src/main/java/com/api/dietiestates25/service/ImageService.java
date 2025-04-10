@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.api.dietiestates25.model.dto.ImageDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+@Component
 public class ImageService {
     @Value("${aws.access.key}")
     private String awsAccessKey;

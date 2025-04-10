@@ -14,16 +14,17 @@ import java.util.List;
 public class CityController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final CityService cityService;
+    public CityController(JdbcTemplate jdbcTemplate, CityService cityService) {
 
-    public CityController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.cityService = cityService;
     }
 
     @GetMapping("/getRegions")
     public ResponseEntity<List<String>> getRegions()
     {
         try {
-            CityService cityService = new CityService();
             return ResponseEntity.ok(cityService.getItalianRegions(jdbcTemplate));
         }
         catch(Exception ex) {
@@ -34,7 +35,6 @@ public class CityController {
     public ResponseEntity<List<String>> getProvinces(String region)
     {
         try {
-            CityService cityService = new CityService();
             return ResponseEntity.ok(cityService.getItalianProvincesByRegion(jdbcTemplate, region));
         }
         catch(Exception ex) {
@@ -45,7 +45,6 @@ public class CityController {
     public ResponseEntity<List<CityModel>> getCities(String province)
     {
         try {
-            CityService cityService = new CityService();
             return ResponseEntity.ok(cityService.getItalianCitiesByProvince(jdbcTemplate,province));
         }
         catch(Exception ex) {

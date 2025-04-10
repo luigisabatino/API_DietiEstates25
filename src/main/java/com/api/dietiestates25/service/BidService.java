@@ -5,10 +5,12 @@ import com.api.dietiestates25.model.CounterOfferModel;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class BidService {
     public int insertBid(JdbcTemplate jdbcTemplate, String sessionId, BidModel bid) {
         requiredValuesForBidOperations(bid, Operation.InsertBid);

@@ -5,9 +5,11 @@ import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.extention.InsertCompanyRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class CompanyService {
     public CodeResponse insertCompany(JdbcTemplate jdbcTemplate, InsertCompanyRequest request) {
         requiredValuesForCompanyOperations(request);

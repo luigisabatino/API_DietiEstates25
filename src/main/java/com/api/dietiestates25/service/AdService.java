@@ -4,10 +4,12 @@ import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class AdService {
 
     public int insertAd(JdbcTemplate jdbcTemplate, String sessionId, AdModel ad) {

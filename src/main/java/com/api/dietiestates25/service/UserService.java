@@ -88,6 +88,11 @@ public class UserService {
             return new UserModel(rs);
         }, email);
     }
+    public boolean logout(JdbcTemplate jdbcTemplate, String sessionId) {
+        var query = "DELETE FROM SESSIONS WHERE SESSIONID = ?";
+        int response = jdbcTemplate.update(query, sessionId);
+        return (response > 0);
+    }
     public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
         if(operation != Operation.AgentsByCompany && (user.getEmail() == null || user.getEmail().isBlank()))
             throw new RequiredParameterException("email");

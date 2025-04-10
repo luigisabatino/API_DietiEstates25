@@ -1,5 +1,6 @@
 package com.api.dietiestates25.controller;
 
+import com.api.dietiestates25.model.dto.user.ConfirmUserDTO;
 import com.api.dietiestates25.model.dto.user.CreateUserDTO;
 import com.api.dietiestates25.model.dto.user.LoginDTO;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
@@ -8,7 +9,7 @@ import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.api.dietiestates25.throwable.NoMatchCredentialsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,9 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<DetailEntityDTO<UserModel>> login(@RequestBody LoginDTO dto) {
-        UserModel user = new UserModel(dto);
         var response = new CodeEntitiesResponse<UserModel>();
         try {
+            UserModel user = new UserModel(dto);
             response = new CodeEntitiesResponse<UserModel>(userService.login(jdbcTemplate, user));
             if(response.getCode() == 0) {
                 response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
@@ -40,9 +41,9 @@ public class UserController {
     }
     @PostMapping("/createUser")
     public ResponseEntity<String> createUser(@RequestBody CreateUserDTO dto) {
-        UserModel user = new UserModel(dto);
         var response = new CodeResponse();
         try {
+            UserModel user = new UserModel(dto);
             response.setCode(userService.createUser(jdbcTemplate, user));
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(user, 'U');
@@ -54,10 +55,10 @@ public class UserController {
         }
     }
     @PostMapping("/confirmUser")
-    public ResponseEntity<String> confirmUser(boolean isManagerOrAgent, @RequestBody CreateUserDTO dto) {
-        UserModel user = new UserModel(dto);
+    public ResponseEntity<String> confirmUser(boolean isManagerOrAgent, @RequestBody ConfirmUserDTO dto) {
         CodeResponse response = new CodeResponse();
         try {
+            UserModel user = new UserModel(dto);
             if(isManagerOrAgent)
                 response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));
             else
@@ -71,9 +72,9 @@ public class UserController {
     }
     @PostMapping("/createAgent")
     public ResponseEntity<String> createAgent(@RequestBody CreateUserDTO dto, @RequestHeader String sessionId) {
-        UserModel user = new UserModel(dto);
         CodeResponse response = new CodeResponse();
         try {
+            UserModel user = new UserModel(dto);
             user.setPwd();
             response.setCode(userService.createAgent(jdbcTemplate, user, sessionId));
             if(response.getCode()==0)
@@ -102,6 +103,32 @@ public class UserController {
         var response = new CodeResponse();
         try {
             response.setCode( (userService.logout(jdbcTemplate, sessionId) ? 0 : -1) );
+            return response.toHttpMessageResponse();
+        }
+        catch(Exception ex) {
+            return response.toHttpMessageResponse(ex);
+        }
+    }
+    @PutMapping("changePwd")
+    public ResponseEntity<String> changePwd(@RequestBody ConfirmUserDTO dto) {
+        var response = new CodeResponse();
+        try {
+            UserModel user = new UserModel(dto);
+            response.setCode(userService.changePwd(jdbcTemplate, user));
+            return response.toHttpMessageResponse();
+        }
+        catch(Exception ex) {
+            return response.toHttpMessageResponse(ex);
+        }
+    }
+    @GetMapping("generateOtp")
+    public ResponseEntity<String> generateOtp(@RequestParam EmailService.OtpKey key, @RequestParam String email) {
+        var response = new CodeResponse();
+        try {
+            UserModel user = new UserModel(email);
+            if(userService.insertOtp(jdbcTemplate, user))
+                emailService.sendOtpEmail(user, key);
+            response.setCode(0);
             return response.toHttpMessageResponse();
         }
         catch(Exception ex) {

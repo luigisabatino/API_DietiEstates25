@@ -6,8 +6,6 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.api.dietiestates25.model.UserModel;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -75,21 +73,32 @@ public class EmailService {
                     user.getEmail(),
                     "DietiEstates Account Verification",
                     (usertype=='U') ?
-                            templateActivationEmailOTP(user.getFirstName(), user.getOtp())
-                            : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),(usertype=='A')?"Agent":"Manager")
+                            templateOTP(user.getFirstName(), user.getOtp(), OtpKey.CreateUser)
+                            : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),((usertype=='A')?"Agent":"Manager"))
             );
             return true;
         } catch (Exception ex) {
             return false;
         }
     }
-    private String templateActivationEmailOTP(String name, String otp) throws IOException {
+    public boolean sendOtpEmail(UserModel user, OtpKey key) {
+        try {
+            sendEmail(
+                    user.getEmail(),
+                    "DietiEstates Account Verification",
+                    templateOTP(user.getFirstName(), user.getOtp(), key));
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    private String templateOTP(String name, String otp, OtpKey key) throws IOException {
         return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/otp.html"))
                 .readAllBytes(), StandardCharsets.UTF_8)
                 .replace("${name}", name)
-                .replace("${otp}", otp);
+                .replace("${otp}", otp)
+                .replace("${message}", getMessageFromOtpKey(key));
     }
-
     private String templateActivationEmailTempPwd(String name, String pwd, String usertype) throws IOException {
         return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/tempPwd.html"))
                 .readAllBytes(), StandardCharsets.UTF_8)
@@ -97,5 +106,23 @@ public class EmailService {
                 .replace("${pwd}", pwd)
                 .replace("${usertype}", usertype);
     }
-
+    public enum OtpKey {
+        ChangePwd,
+        CreateUser;
+    }
+    private String getMessageFromOtpKey(OtpKey key) {
+        String message = "";
+        switch(key) {
+            case ChangePwd:
+                message = "Insert this OTP for change your password the required operation!";
+                break;
+            case CreateUser:
+                message = "Thank you for creating your DietiEstates account!";
+                break;
+            default:
+                message =  "Insert this OTP for complete the required operation!";
+                break;
+        }
+        return message;
+    }
 }

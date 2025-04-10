@@ -48,6 +48,9 @@ public class UserModel {
         pwd = confirmUserDTO.getPwd();
         otp = confirmUserDTO.getTemporaryPwd();
     }
+    public UserModel(String email) {
+        this.email = email;
+    }
     public void setPwd() {
         String alphabet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!&$_";
         SecureRandom random = new SecureRandom();

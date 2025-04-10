@@ -2,7 +2,6 @@ package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.throwable.*;
 import com.api.dietiestates25.model.response.CodeResponse;
-import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.UserModel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,11 +18,6 @@ public class UserService {
         requiredValuesForUserOperations(user, Operation.Login);
         CodeResponse response = new CodeResponse();
         String pwdInDB = checkPwd(jdbcTemplate, user);
-        if (pwdInDB == null) {
-            response.setMessage("Invalid credentials.");
-            response.setCode(-2);
-            return response;
-        }
         String query = "SELECT * FROM LOGIN(?, ?)";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
                 response.setMessage(rs.getString("session_id"));
@@ -37,11 +31,11 @@ public class UserService {
             String query = "SELECT PWD FROM USERS WHERE email = ?";
             pwdInDB = jdbcTemplate.queryForObject(query, String.class, user.getEmail());
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new NoMatchCredentialsException();
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if(!encoder.matches(user.getPwd(),pwdInDB))
-            return null;
+            throw new NoMatchCredentialsException();
         return pwdInDB;
     }
     public int createUser(JdbcTemplate jdbcTemplate, UserModel user) {
@@ -62,7 +56,6 @@ public class UserService {
         requiredValuesForUserOperations(user, Operation.ConfirmManagerOrAgent);
         user.encodeOtp();
         var pwdInDB = checkPwd(jdbcTemplate, user);
-
         String query = "SELECT * FROM CONFIRM_MANAGERORAGENT(?, ?, ?)";
         var response = new CodeResponse();
         return (jdbcTemplate.queryForObject(query, Integer.class,
@@ -90,15 +83,25 @@ public class UserService {
     }
     public boolean logout(JdbcTemplate jdbcTemplate, String sessionId) {
         var query = "DELETE FROM SESSIONS WHERE SESSIONID = ?";
-        int response = jdbcTemplate.update(query, sessionId);
-        return (response > 0);
+        return (jdbcTemplate.update(query, sessionId) > 0);
+    }
+    public int changePwd(JdbcTemplate jdbcTemplate, UserModel user) {
+        requiredValuesForUserOperations(user, Operation.ChangePwd);
+        user.encodePwd();
+        var query = "UPDATE USERS SET PWD = ? WHERE EMAIL = ? AND OTP = ?";
+        return (jdbcTemplate.update(query, user.getPwd(), user.getEmail(), user.getOtp()));
+    }
+    public boolean insertOtp(JdbcTemplate jdbcTemplate, UserModel user) {
+        user.setOtp();
+        var query = "UPDATE USERS SET OTP = ? WHERE EMAIL = ?";
+        return (jdbcTemplate.update(query, user.getOtp(), user.getEmail()) > 0);
     }
     public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
-        if(operation != Operation.AgentsByCompany && (user.getEmail() == null || user.getEmail().isBlank()))
+        if((operation != Operation.AgentsByCompany) && (user.getEmail() == null || user.getEmail().isBlank()))
             throw new RequiredParameterException("email");
-        if(operation == Operation.ConfirmManagerOrAgent && (user.getPwd() == null || user.getPwd().isBlank()))
+        if((operation == Operation.ConfirmManagerOrAgent || operation == Operation.ChangePwd) && (user.getPwd() == null || user.getPwd().isBlank()))
             throw new RequiredParameterException("pwd");
-        if((operation == Operation.ConfirmUser) && (user.getOtp() == null || user.getOtp().isBlank()))
+        if((operation == Operation.ConfirmUser || operation == Operation.ChangePwd) && (user.getOtp() == null || user.getOtp().isBlank()))
             throw new RequiredParameterException("otp");
         if((operation == Operation.CreateUser || operation == Operation.CreateAgent) && (user.getFirstName() == null || user.getFirstName().isBlank()))
             throw new RequiredParameterException("firstName");
@@ -113,6 +116,7 @@ public class UserService {
         Login,
         ConfirmManagerOrAgent,
         ConfirmUser,
-        AgentsByCompany;
+        AgentsByCompany,
+        ChangePwd;
     }
 }

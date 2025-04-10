@@ -1,12 +1,12 @@
 package com.api.dietiestates25.model.response;
 
+import com.api.dietiestates25.throwable.NoMatchCredentialsException;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.api.dietiestates25.model.*;
 
 @Getter
 @Setter
@@ -90,6 +90,10 @@ public class CodeResponse  {
             if(ex instanceof RequiredParameterException) {
                 message = "Error: the parameter " + ex.getMessage() + " is required!";
                 code = -98;
+            }
+            if(ex instanceof NoMatchCredentialsException) {
+                message = "Error: invalid credentials!";
+                code = -2;
             }
             else if(ex instanceof EmptyResultDataAccessException) {
                 code = -20;

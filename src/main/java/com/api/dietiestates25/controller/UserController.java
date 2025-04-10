@@ -17,19 +17,19 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
+    private final UserService userService;
     private EmailService emailService;
 
-    public UserController(JdbcTemplate jdbcTemplate) {
+    public UserController(JdbcTemplate jdbcTemplate, UserService userService, EmailService emailService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userService = userService;
+        this.emailService = emailService;
     }
     @PostMapping("/login")
     public ResponseEntity<DetailEntityDTO<UserModel>> login(@RequestBody LoginDTO dto) {
         UserModel user = new UserModel(dto);
         var response = new CodeEntitiesResponse<UserModel>();
         try {
-            var userService = new UserService();
             response = new CodeEntitiesResponse<UserModel>(userService.login(jdbcTemplate, user));
             if(response.getCode() == 0) {
                 response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
@@ -44,7 +44,6 @@ public class UserController {
         UserModel user = new UserModel(dto);
         var response = new CodeResponse();
         try {
-            var userService = new UserService();
             response.setCode(userService.createUser(jdbcTemplate, user));
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(user, 'U');
@@ -60,7 +59,6 @@ public class UserController {
         UserModel user = new UserModel(dto);
         CodeResponse response = new CodeResponse();
         try {
-            var userService = new UserService();
             if(isManagerOrAgent)
                 response.setCode(userService.confirmManagerOrAgent(jdbcTemplate, user));
             else
@@ -78,7 +76,6 @@ public class UserController {
         CodeResponse response = new CodeResponse();
         try {
             user.setPwd();
-            var userService = new UserService();
             response.setCode(userService.createAgent(jdbcTemplate, user, sessionId));
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(user, 'A');
@@ -90,11 +87,9 @@ public class UserController {
         }
     }
     @GetMapping("/getAgentsByCompany")
-    public ResponseEntity<DetailEntityDTO<UserModel>> getAgentsByCompany(@RequestParam String company)
-    {
+    public ResponseEntity<DetailEntityDTO<UserModel>> getAgentsByCompany(@RequestParam String company)  {
         var response = new CodeEntitiesResponse<UserModel>();
         try {
-            var userService = new UserService();
             response.setEntities(userService.getAgentsByCompany(jdbcTemplate, company));
             return response.toHttpEntitiesResponse();
         }

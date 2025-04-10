@@ -23,7 +23,7 @@ public class UserService {
             return response;
         }
         String query = "SELECT * FROM LOGIN(?, ?)";
-        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
                 response.setMessage(rs.getString("session_id"));
                 response.setCode(rs.getInt("code"));
                 return response;
@@ -82,7 +82,7 @@ public class UserService {
     }
     public UserModel getUserByEmail(JdbcTemplate jdbcTemplate, String email) {
         String query = "SELECT * FROM USERS WHERE EMAIL = ?";
-        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new UserModel(rs);
         }, email);
     }

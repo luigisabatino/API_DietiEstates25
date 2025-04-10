@@ -41,7 +41,7 @@ public class AdService {
     }
     public AdModel getAdById(JdbcTemplate jdbcTemplate, int id) {
         String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE ID_AD = ?";
-        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new AdModel(rs);
         }, id);
     }

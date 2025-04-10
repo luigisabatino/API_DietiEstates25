@@ -40,13 +40,13 @@ public class BidService {
     public List<BidWithCounterofferModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
         List<BidWithCounterofferModel> response = new ArrayList<BidWithCounterofferModel>();
         switch(key) {
-            case BidsKey.ad :
+            case ad :
                 response = getBidsFromAd(jdbcTemplate, Integer.parseInt(value));
                 break;
-            case BidsKey.bid_id :
+            case bid_id :
                 response.add(getBidFromId(jdbcTemplate, Integer.parseInt(value)));
                 break;
-            case BidsKey.offerer :
+            case offerer :
                 response = getBidsFromOfferer(jdbcTemplate, value);
                 break;
         }
@@ -66,7 +66,7 @@ public class BidService {
     }
     public BidWithCounterofferModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
         String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.BID_ID = ?";
-        return jdbcTemplate.queryForObject(query, (rs, _) -> {
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new BidWithCounterofferModel(rs);
         }, id);
     }

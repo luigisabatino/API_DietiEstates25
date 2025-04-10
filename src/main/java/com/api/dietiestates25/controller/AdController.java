@@ -28,9 +28,9 @@ public class AdController {
     @PostMapping("/insertAd")
     public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
     {
-        AdModel ad = new AdModel(dto);
         var response = new CodeEntitiesResponse<AdModel>();
         try {
+            AdModel ad = new AdModel(dto);
             ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             if(response.getCode() > 0)

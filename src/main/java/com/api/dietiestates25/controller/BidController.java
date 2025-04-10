@@ -3,6 +3,7 @@ package com.api.dietiestates25.controller;
 import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.CounterOfferModel;
 import com.api.dietiestates25.model.dto.bid.AcceptOrRefuseBidDTO;
+import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import com.api.dietiestates25.model.dto.counteroffer.AcceptOrRefuseCounterofferDTO;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.model.response.CodeResponse;
@@ -25,10 +26,11 @@ public class BidController {
     }
 
     @PostMapping("/insertBid")
-    public ResponseEntity<DetailEntityDTO<BidModel>> insertBid(@RequestHeader String sessionId, @RequestBody BidModel bid)
+    public ResponseEntity<DetailEntityDTO<BidModel>> insertBid(@RequestHeader String sessionId, @RequestBody InsertBidDTO dto)
     {
         var response = new CodeEntitiesResponse<BidModel>();
         try {
+            BidModel bid = new BidModel(dto);
             response.setCode(bidService.insertBid(jdbcTemplate, sessionId, bid));
             if(response.getCode() > 0)
                 response.addInEntities(bidService.getBidFromId(jdbcTemplate, response.getCode()));
@@ -55,9 +57,9 @@ public class BidController {
     @PutMapping("/acceptOrRefuseBid")
     public ResponseEntity<String> acceptOrRefuseBid(@RequestHeader String sessionId, @RequestBody AcceptOrRefuseBidDTO dto)
     {
-        BidModel bid = new BidModel(dto);
         var response = new CodeResponse();
         try {
+            BidModel bid = new BidModel(dto);
             response.setCode(bidService.acceptOrRefuseBid(jdbcTemplate, sessionId, bid));
             return response.toHttpMessageResponse();
         }
@@ -82,9 +84,9 @@ public class BidController {
     @PutMapping("/acceptOrRefuseCounteroffer")
     public ResponseEntity<String> acceptOrRefuseCounteroffer(@RequestHeader String sessionId, @RequestBody AcceptOrRefuseCounterofferDTO dto)
     {
-        CounterOfferModel co = new CounterOfferModel(dto);
         var response = new CodeResponse();
         try {
+            CounterOfferModel co = new CounterOfferModel(dto);
             response.setCode(bidService.acceptOrRefuseCounteroffer(jdbcTemplate, sessionId, co));
             return response.toHttpMessageResponse();
         }

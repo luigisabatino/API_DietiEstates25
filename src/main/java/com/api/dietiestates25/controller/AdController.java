@@ -31,7 +31,7 @@ public class AdController {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             AdModel ad = new AdModel(dto);
-            ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
+            //ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             if(response.getCode() > 0)
                 response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));

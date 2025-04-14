@@ -91,7 +91,7 @@ public class CodeResponse  {
                 message = "Error: the parameter " + ex.getMessage() + " is required!";
                 code = -98;
             }
-            if(ex instanceof NoMatchCredentialsException) {
+            else if(ex instanceof NoMatchCredentialsException) {
                 message = "Error: invalid credentials!";
                 code = -2;
             }

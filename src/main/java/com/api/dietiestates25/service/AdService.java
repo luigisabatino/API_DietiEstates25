@@ -14,7 +14,7 @@ public class AdService {
 
     public int insertAd(JdbcTemplate jdbcTemplate, String sessionId, AdModel ad) {
         requiredValuesForAdOperations(ad, AdService.Operation.InsertAd);
-        String query = "SELECT FROM INSERT_AD(?,?::numeric,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String query = "SELECT * FROM INSERT_AD(?,?::numeric,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, ad.getPrice(), ad.getCity(), ad.getAddress(), ad.getNRooms(), ad.getNBathrooms(), ad.getFloor(), ad.isLift(), ad.getEnergyClass(), ad.getDescription(), ad.getType(), ad.getDimentions(), ad.getCoordinates(), ad.isSchool350m(), ad.isPublicTransport350m(), ad.isLeisurePark350m(), ad.isPrivateGarage(), ad.isCondominiumParking(), ad.isDoormanService(), ad.isAirConditioning()
         )) );
@@ -63,14 +63,12 @@ public class AdService {
             throw new RequiredParameterException("number of rooms");
         if((operation == Operation.InsertAd)&&(ad.getNBathrooms()==0))
             throw new RequiredParameterException("number of bathrooms");
-        if((operation == Operation.InsertAd)&&(ad.getNBathrooms()==0))
-            throw new RequiredParameterException("number of bathrooms");
         if((operation == Operation.InsertAd || operation == Operation.SearchAd)&&(ad.getType()==null||ad.getType().isBlank()))
             throw new RequiredParameterException("ad type");
         if((operation == Operation.InsertAd)&&(ad.getDimentions()==0))
             throw new RequiredParameterException("dimentions");
-        if((operation == Operation.InsertAd)&&(ad.getCoordinates()==null||ad.getCoordinates().isBlank()))
-            throw new RequiredParameterException("coordinates");
+        /*if((operation == Operation.InsertAd)&&(ad.getCoordinates()==null||ad.getCoordinates().isBlank()))
+            throw new RequiredParameterException("coordinates");*/
     }
     public enum Operation {
         InsertAd,

@@ -75,7 +75,6 @@ public class UserController {
         CodeResponse response = new CodeResponse();
         try {
             UserModel user = new UserModel(dto);
-            user.setPwd();
             response.setCode(userService.createAgent(jdbcTemplate, user, sessionId));
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(user, 'A');
@@ -114,7 +113,11 @@ public class UserController {
         var response = new CodeResponse();
         try {
             UserModel user = new UserModel(dto);
-            response.setCode(userService.changePwd(jdbcTemplate, user));
+            var rowsAffected = userService.changePwd(jdbcTemplate, user);
+            response.setCode(rowsAffected == 0
+                    ? -6
+                    : rowsAffected
+            );
             return response.toHttpMessageResponse();
         }
         catch(Exception ex) {

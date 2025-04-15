@@ -18,16 +18,16 @@ public class CodeResponse  {
         switch (code) {
             case 0:
             case -5:
-                message = "Operation successfull.";
+                message = "Operation successful.";
                 break;
             case -1:
                 message = "Error: Invalid session.";
                 break;
             case -2:
-                message = "Error: Don't have permission to perform the requested operation.";
+                message = "Error: You don't have permission to perform the requested operation.";
                 break;
             case -3:
-                message = "Error: Already exist a user with this email in our systems.";
+                message = "Error: A user with this email already exists in our system.";
                 break;
             case -4:
                 message = "Error: Impossible to insert bid for this ad.";
@@ -36,16 +36,16 @@ public class CodeResponse  {
                 message = "Error: Invalid value.";
                 break;
             case -7:
-                message = "Error: temporary password must be change";
+                message = "Error: temporary password must be changed";
                 break;
             case -97:
-                message = "Error: VAT Number not valid";
+                message = "Error: Invalid VAT Number.";
                 break;
             case -20:
-                message = "Error: ID not valid";
+                message = "Error: Invalid ID.";
                 break;
             default:
-                if (code > 0) message = "Operation successfull.";
+                if (code > 0) message = "Operation successful.";
                 break;
         }
     }

@@ -85,17 +85,18 @@ public class EmailService {
         try {
             sendEmail(
                     user.getEmail(),
-                    "DietiEstates Account Verification",
-                    templateOTP(user.getFirstName(), user.getOtp(), key));
+                    "DietiEstates " + (key.equals(OtpKey.ChangePwd) ? "Password Change" : "Account Verification"),
+                    templateOTP("", user.getOtp(), key));
             return true;
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             return false;
         }
     }
     private String templateOTP(String name, String otp, OtpKey key) throws IOException {
         return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/otp.html"))
                 .readAllBytes(), StandardCharsets.UTF_8)
-                .replace("${name}", name)
+                .replace("${name}", key.equals(OtpKey.ChangePwd) ? "" : name)
                 .replace("${otp}", otp)
                 .replace("${message}", getMessageFromOtpKey(key));
     }
@@ -108,21 +109,13 @@ public class EmailService {
     }
     public enum OtpKey {
         ChangePwd,
-        CreateUser;
+        CreateUser
     }
     private String getMessageFromOtpKey(OtpKey key) {
-        String message = "";
-        switch(key) {
-            case ChangePwd:
-                message = "Insert this OTP for change your password the required operation!";
-                break;
-            case CreateUser:
-                message = "Thank you for creating your DietiEstates account!";
-                break;
-            default:
-                message =  "Insert this OTP for complete the required operation!";
-                break;
-        }
-        return message;
+        return switch (key) {
+            case ChangePwd -> "Please use this OTP to complete your password change.";
+            case CreateUser -> "Thank you for creating your DietiEstates account.";
+        };
     }
 }
+

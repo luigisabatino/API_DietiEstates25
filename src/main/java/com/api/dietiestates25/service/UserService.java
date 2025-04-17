@@ -63,7 +63,9 @@ public class UserService {
     }
     public int createAgent(JdbcTemplate jdbcTemplate, UserModel user, String sessionId) {
         requiredValuesForUserOperations(user, Operation.CreateAgent);
-        //user.encodePwd();
+        user.setPwd();
+        user.setOtp(user.getPwd());
+        user.encodePwd();
         String query = "SELECT * FROM CREATE_TEMP_AGENT(?,?,?,?,?)";
         return (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId,user.getEmail(), user.getPwd(),user.getFirstName(),user.getLastName()));
@@ -89,7 +91,7 @@ public class UserService {
         requiredValuesForUserOperations(user, Operation.ChangePwd);
         user.encodePwd();
         var query = "UPDATE USERS SET PWD = ? WHERE EMAIL = ? AND OTP = ?";
-        return (jdbcTemplate.update(query, user.getPwd(), user.getEmail(), user.getOtp()));
+        return jdbcTemplate.update(query, user.getPwd(), user.getEmail(), user.getOtp());
     }
     public boolean insertOtp(JdbcTemplate jdbcTemplate, UserModel user) {
         user.setOtp();

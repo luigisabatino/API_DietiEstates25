@@ -8,14 +8,14 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.api.dietiestates25.model.dto.ImageDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ImageService {
     @Value("${aws.access.key}")
     private String awsAccessKey;
@@ -26,12 +26,12 @@ public class ImageService {
     @Value("${aws.region}")
     private String awsRegion;
 
-    @Value("s3.bucket")
+    @Value("${s3.bucket}")
     private String imageBucket;
 
     AmazonS3 client;
 
-    public ImageService() {
+    public void initialize() {
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
         client = AmazonS3ClientBuilder.standard()
                 .withRegion(awsRegion)
@@ -40,6 +40,7 @@ public class ImageService {
     }
 
     public void uploadImage(ImageDTO request) {
+        initialize();
         byte[] imageBytes = Base64.getDecoder().decode(request.getBase64Image());
         InputStream inputStream = new ByteArrayInputStream(imageBytes);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -49,6 +50,7 @@ public class ImageService {
     }
 
     public List<ImageDTO> getImagesByPrefix(String prefix) throws Exception {
+        initialize();
         ListObjectsV2Request request = new ListObjectsV2Request()
                 .withBucketName(imageBucket)
                 .withPrefix(prefix);
@@ -65,6 +67,7 @@ public class ImageService {
     }
 
     public boolean deleteImagesByPrefix(String prefix) {
+        initialize();
         try {
             List<ImageDTO> images = getImagesByPrefix(prefix);
             for(var img : images) {

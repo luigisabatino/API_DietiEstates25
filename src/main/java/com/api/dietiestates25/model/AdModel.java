@@ -49,10 +49,7 @@ public class AdModel {
         description = insertAdDTO.getDescription();
         type = insertAdDTO.getType();
         dimentions = insertAdDTO.getDimentions();
-        coordinates = insertAdDTO.getCoordinates();
-        publicTransport350m = insertAdDTO.isPublicTransport350m();
-        school350m = insertAdDTO.isSchool350m();
-        leisurePark350m = insertAdDTO.isLeisurePark350m();
+        //coordinates = insertAdDTO.getCoordinates();
         privateGarage = insertAdDTO.isPrivateGarage();
         condominiumParking = insertAdDTO.isCondominiumParking();
         doormanService = insertAdDTO.isDoormanService();

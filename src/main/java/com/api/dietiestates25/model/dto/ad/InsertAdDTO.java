@@ -17,10 +17,6 @@ public class InsertAdDTO {
     private String description;
     private String type;
     private int dimentions;
-    private String coordinates;
-    private boolean publicTransport350m;
-    private boolean school350m;
-    private boolean leisurePark350m;
     private boolean privateGarage;
     private boolean condominiumParking;
     private boolean doormanService;

@@ -1,6 +1,8 @@
 package com.api.dietiestates25.service;
 
+import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.CityModel;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -26,5 +28,10 @@ public class CityService {
         return (jdbcTemplate.query(query, new Object[]{province}, (rs, rowNum) -> {
             return new CityModel(rs);
         }));
+    }
+    public String getCityNameByCode(JdbcTemplate jdbcTemplate, String code) {
+        String query = "SELECT NAME FROM ITALIAN_CITIES WHERE ISTAT_CODE = ?";
+        return jdbcTemplate.queryForObject(query, String.class,
+                code);
     }
 }

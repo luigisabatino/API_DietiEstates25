@@ -6,7 +6,9 @@ import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.dto.DetailEntityDTO;
+import com.api.dietiestates25.model.response.OpenstreetResponse;
 import com.api.dietiestates25.service.AdService;
+import com.api.dietiestates25.service.CityService;
 import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +16,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class AdController {
 
     private final JdbcTemplate jdbcTemplate;
     private final ExternalApiService apiService;
     private final AdService adService;
-    public AdController(JdbcTemplate jdbcTemplate, ExternalApiService apiService, AdService adService) {
+    private final CityService cityService;
+    public AdController(JdbcTemplate jdbcTemplate, ExternalApiService apiService, AdService adService, CityService cityService) {
         this.jdbcTemplate = jdbcTemplate;
         this.apiService = apiService;
         this.adService = adService;
+        this.cityService = cityService;
     }
+    /*@GetMapping("/test")
+    public ResponseEntity<List<OpenstreetResponse>> test(String address, String zipCode)
+    {
+        try {
+            return ResponseEntity.ok(apiService.coordinatesFromAddress(address + " " + zipCode));
+        }
+        catch(Exception ex) {
+            return ResponseEntity.ok(null);
+        }
+    }*/
     @PostMapping("/insertAd")
     public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
     {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             AdModel ad = new AdModel(dto);
-            //ad.valorizePlacesInterest(apiService.placesInterestNearby(ad.getCoordinates()));
+            List<OpenstreetResponse> osResponse = apiService.coordinatesFromAddress( (dto.getAddress() + " " + (cityService.getCityNameByCode(jdbcTemplate, dto.getCity())) ));
+            if(osResponse.size() > 0) {
+                var osElement = osResponse.get(0);
+                ad.setCoordinates(osElement.getLat() + " ; " + osElement.getLon());
+                ad.valorizePlacesInterest(apiService.placesInterestNearby(osElement.getLon() + "," + osElement.getLat()));
+            }
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
             if(response.getCode() > 0)
                 response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));

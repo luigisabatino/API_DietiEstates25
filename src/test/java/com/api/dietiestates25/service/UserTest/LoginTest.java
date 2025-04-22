@@ -1,7 +1,7 @@
 package com.api.dietiestates25.service.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
-import com.api.dietiestates25.model.UserModel;
+import com.api.dietiestates25.model.dto.user.LoginDTO;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.UserService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
@@ -25,8 +25,6 @@ class LoginTest {
     private MockMvc mockMvc;
     @Mock
     private UserService userService;
-    @Mock
-    private JdbcTemplate jdbcTemplate;
     @InjectMocks
     private UserController userController;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -34,7 +32,7 @@ class LoginTest {
     @Test
     void testLogin_Success() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail("test@mail.it");
         user.setPwd("testpwd");
         CodeResponse response = new CodeResponse();
@@ -49,7 +47,7 @@ class LoginTest {
     @Test
     void testLogin_InvalidCredentials() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail("test@mail.it");
         user.setPwd("wrongpwd");
         CodeResponse response = new CodeResponse();
@@ -63,7 +61,7 @@ class LoginTest {
     @Test
     void testLogin_RequiredParameterExceptionPwdNull() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail("test@mail.it");
         user.setPwd(null);
         when(userService.login(any(), any())).thenThrow(new RequiredParameterException("pwd"));
@@ -75,7 +73,7 @@ class LoginTest {
     @Test
     void testLogin_RequiredParameterExceptionPwdEmpty() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail("test@mail.it");
         user.setPwd("");
         when(userService.login(any(), any())).thenThrow(new RequiredParameterException("pwd"));
@@ -87,7 +85,7 @@ class LoginTest {
     @Test
     void testLogin_RequiredParameterExceptionEmailNull() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail(null);
         user.setPwd("testpwd");
         when(userService.login(any(), any())).thenThrow(new RequiredParameterException("email"));
@@ -99,7 +97,7 @@ class LoginTest {
     @Test
     void testLogin_RequiredParameterExceptionEmailEmpty() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        UserModel user = new UserModel();
+        LoginDTO user = new LoginDTO();
         user.setEmail("");
         user.setPwd("testpassword");
         when(userService.login(any(), any())).thenThrow(new RequiredParameterException("email"));

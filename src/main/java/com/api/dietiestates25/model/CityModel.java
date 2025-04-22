@@ -12,6 +12,7 @@ public class CityModel {
     private String name;
     private String code;
 
+    public CityModel() { }
     public CityModel(ResultSet rs) {
         try {
             name = rs.getString("name").replaceAll("£","'");

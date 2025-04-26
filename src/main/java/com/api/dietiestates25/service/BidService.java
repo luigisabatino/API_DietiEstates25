@@ -14,7 +14,7 @@ import java.util.List;
 public class BidService {
     public int insertBid(JdbcTemplate jdbcTemplate, String sessionId, BidModel bid) {
         requiredValuesForBidOperations(bid, Operation.InsertBid);
-        String query = "SELECT * FROM INSERT_BID(?, ?, ?, ?, ?)";
+        String query = "SELECT insert_bid(?::VARCHAR, ?::INTEGER, ?::NUMERIC, ?::VARCHAR, ?::VARCHAR);";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, bid.getAd(), bid.getAmount(), bid.getOffererMessage(), bid.getAgentMessage() )));
     }

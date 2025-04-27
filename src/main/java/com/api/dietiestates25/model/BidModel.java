@@ -12,19 +12,26 @@ import java.sql.SQLException;
 public class BidModel {
     private int ad;
     private double amount;
+    private String offerer;
     private String agentMessage;
+    private String timestamp;
     private String offererMessage;
     private int id;
     private String status;
+    private String firstname, lastname;
     public BidModel() { }
     public BidModel(ResultSet rs) {
         try {
             id = rs.getInt("bid_id");
             agentMessage = rs.getString("agent_message");
+            offerer = rs.getString("offerer");
             offererMessage = rs.getString("offerer_message");
             ad = rs.getInt("ad");
             amount = rs.getDouble("amount");
             status = rs.getString("status");
+            timestamp = rs.getString("creation_time");
+            firstname = rs.getString("firstname");
+            lastname = rs.getString("lastname");
         }
         catch(SQLException ex) {
             //TO DO
@@ -41,5 +48,6 @@ public class BidModel {
         offererMessage = arDto.getOffererMessage();
         id = arDto.getId();
         amount = arDto.getAmount();
+        status = arDto.getStatus();
     }
 }

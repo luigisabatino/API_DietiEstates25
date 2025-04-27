@@ -25,7 +25,7 @@ public class BidService {
     }
     public int acceptOrRefuseBid(JdbcTemplate jdbcTemplate, String sessionId, BidModel bid) {
         requiredValuesForBidOperations(bid, Operation.AcceptOrRefuseBid);
-        String query = "SELECT * FROM ACCEPT_REFUSE_BID(?,?,?,?,?)";
+        String query = "SELECT accept_refuse_bid(?::VARCHAR, ?::INTEGER, ?::VARCHAR, ?::NUMERIC, ?::VARCHAR)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, bid.getId(), bid.getAgentMessage(), bid.getAmount(), bid.getStatus() )));
     }
@@ -35,10 +35,11 @@ public class BidService {
                 sessionId, coId )));
     }
     public int acceptOrRefuseCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, CounterOfferModel co) {
-        String query = "SELECT * FROM ACCEPT_REFUSE_Counteroffer(?, ?,?)";
+        String query = "SELECT accept_refuse_counteroffer(?, ?, ?)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, co.getId(), co.getStatus() )));
     }
+
     public List<BidWithCounterofferModel> getBids(JdbcTemplate jdbcTemplate, BidsKey key, String value) {
         List<BidWithCounterofferModel> response = new ArrayList<BidWithCounterofferModel>();
         switch(key) {
@@ -55,19 +56,19 @@ public class BidService {
         return response;
     }
     private List<BidWithCounterofferModel> getBidsFromAd(JdbcTemplate jdbcTemplate, int ad) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.AD = ?";
+        String query = "SELECT B.*, C.co_id, C.parent_bid, C.amount as co_amount, C.status as co_status, U.firstname, U.lastname FROM bids B LEFT JOIN counteroffer C ON B.BID_ID = C.PARENT_BID LEFT JOIN users U ON offerer = email WHERE B.ad = ?";
         return (jdbcTemplate.query(query, new Object[]{ad}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     private List<BidWithCounterofferModel> getBidsFromOfferer(JdbcTemplate jdbcTemplate, String offerer) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.OFFERER = ?";
+        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status, U.firstname, U.lastname FROM bids B LEFT JOIN counteroffer C ON B.bid_id = C.parent_bid LEFT JOIN users U ON offerer = email WHERE B.offerer = ?";
         return (jdbcTemplate.query(query, new Object[]{offerer}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     public BidWithCounterofferModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM BIDS B LEFT JOIN COUNTEROFFER C ON B.BID_ID = C.PARENT_BID WHERE B.BID_ID = ?";
+        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status FROM bids B LEFT JOIN counteroffer C ON B.bid_id = C.parent_bid LEFT JOIN users U ON offerer = email WHERE B.bid_id = ?";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new BidWithCounterofferModel(rs);
         }, id);
@@ -83,17 +84,17 @@ public class BidService {
             throw new RequiredParameterException("ad");
         if((operation == Operation.InsertBid) && ((bid.getAmount()==0)))
             throw new RequiredParameterException("amount");
-        if((operation == Operation.AcceptOrRefuseBid || operation == Operation.AcceptOrRefuseCounteroffer) && (bid.getStatus().isBlank() || bid.getStatus().isBlank()))
+        if((operation == Operation.AcceptOrRefuseCounteroffer) && (bid.getStatus().isBlank()))
             throw new RequiredParameterException("status");
     }
     public enum Operation {
         AcceptOrRefuseBid,
         InsertBid,
-        AcceptOrRefuseCounteroffer;
+        AcceptOrRefuseCounteroffer
     }
     public enum BidsKey {
         ad,
         bid_id,
-        offerer;
+        offerer
     }
 }

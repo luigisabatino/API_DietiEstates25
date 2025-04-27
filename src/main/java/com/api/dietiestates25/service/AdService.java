@@ -26,9 +26,9 @@ public class AdService {
             return response;
         }
         requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
-        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE AGENT LIKE ? AND PRICE BETWEEN ? AND ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?;";
+        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE EMAIL LIKE ? AND PRICE BETWEEN ? AND ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?;";
         return (jdbcTemplate.query(query, new Object[]{
-                "%" + ad.getAgent() + "%",
+                "%" + ad.getAgentEmail() + "%",
                 ad.getPrice(),
                 ad.getMaxPrice(),
                 "%" + ad.getAddress() + "%",
@@ -37,15 +37,11 @@ public class AdService {
                 ad.getType(),
                 "%" + ad.getProvince() + "%",
                 "%" + ad.getRegion() + "%",
-                "%" + ad.getCity() + "%" }, (rs, rowNum) -> {
-            return new AdModel(rs);
-        }));
+                "%" + ad.getCity() + "%" }, (rs, rowNum) -> new AdModel(rs)));
     }
     public AdModel getAdById(JdbcTemplate jdbcTemplate, int id) {
         String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE ID_AD = ?";
-        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
-            return new AdModel(rs);
-        }, id);
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> new AdModel(rs), id);
     }
     public int deleteAd(JdbcTemplate jdbcTemplate, String sessionId, int id) {
         String query = "SELECT * FROM DELETE_AD(?,?)";
@@ -72,6 +68,6 @@ public class AdService {
     }
     public enum Operation {
         InsertAd,
-        SearchAd;
+        SearchAd
     }
 }

@@ -10,4 +10,5 @@ public class AcceptOrRefuseBidDTO {
     private double amount;
     private String agentMessage;
     private String offererMessage;
+    private String status;
 }

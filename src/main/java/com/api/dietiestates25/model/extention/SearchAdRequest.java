@@ -9,12 +9,12 @@ import lombok.Getter;
 @Setter
 public class SearchAdRequest extends AdModel {
     private double maxPrice;
+    private String agentEmail;
+
     public double getMaxPrice() {
         return ((maxPrice==0) ? Double.MAX_VALUE : maxPrice);
     }
-    public String getAgent() {
-        return ((super.getAgent()==null) ? "" : super.getAgent());
-    }
+    public String getAgentEmail() { return agentEmail == null ? "" : agentEmail; }
     public String getProvince() {
         return ((super.getProvince()==null) ? "" : super.getProvince());
     }

@@ -4,6 +4,8 @@ import com.api.dietiestates25.model.dto.bid.AcceptOrRefuseBidDTO;
 import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.w3c.dom.css.Counter;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -41,5 +43,11 @@ public class BidModel {
         offererMessage = arDto.getOffererMessage();
         id = arDto.getId();
         amount = arDto.getAmount();
+        status = arDto.getStatus();
+    }
+    public BidModel(CounterOfferModel co) {
+        id = co.getId();
+        status = co.getStatus();
+        amount = co.getAmount();
     }
 }

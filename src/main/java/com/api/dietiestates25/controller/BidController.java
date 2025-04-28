@@ -47,7 +47,7 @@ public class BidController {
         var response = new CodeResponse();
         try {
             response.setCode(bidService.cancelBid(jdbcTemplate, sessionId, bidId));
-             return response.toHttpMessageResponse();
+            return response.toHttpMessageResponse();
         }
         catch(Exception ex)
         {
@@ -69,7 +69,7 @@ public class BidController {
         }
     }
     @PutMapping("/cancelCounteroffer")
-    public ResponseEntity<String> cancelCounteroffer(@RequestHeader String sessionId, int coId)
+    public ResponseEntity<String> cancelCounteroffer(@RequestHeader String sessionId, @RequestParam int coId)
     {
         var response = new CodeResponse();
         try {

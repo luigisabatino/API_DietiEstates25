@@ -35,6 +35,7 @@ public class BidService {
                 sessionId, coId )));
     }
     public int acceptOrRefuseCounteroffer(JdbcTemplate jdbcTemplate, String sessionId, CounterOfferModel co) {
+        requiredValuesForBidOperations(new BidModel(co), Operation.AcceptOrRefuseCounteroffer);
         String query = "SELECT * FROM ACCEPT_REFUSE_Counteroffer(?, ?,?)";
         return ( (jdbcTemplate.queryForObject(query, Integer.class,
                 sessionId, co.getId(), co.getStatus() )));

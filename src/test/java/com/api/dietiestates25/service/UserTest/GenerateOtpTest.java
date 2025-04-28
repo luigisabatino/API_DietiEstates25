@@ -1,7 +1,6 @@
 package com.api.dietiestates25.service.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
-import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.Objects;
-
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;

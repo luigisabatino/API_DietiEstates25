@@ -1,18 +1,13 @@
 package com.api.dietiestates25.service.CompanyTest;
 
 import com.api.dietiestates25.controller.CompanyController;
-import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.model.UserModel;
-import com.api.dietiestates25.model.dto.user.CreateUserDTO;
 import com.api.dietiestates25.model.extention.InsertCompanyRequest;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.CompanyService;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.ExternalApiService;
-import com.api.dietiestates25.service.UserService;
-import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.sql.Insert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,19 +26,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class InsertCompanyTest {
 
     private MockMvc mockMvc;
-
     @Mock
     private CompanyService companyService;
-
     @Mock
     private EmailService emailService;
-
     @Mock
     private ExternalApiService apiService;
-
     @InjectMocks
     private CompanyController companyController;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

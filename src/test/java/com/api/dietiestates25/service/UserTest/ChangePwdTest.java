@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -24,16 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ChangePwdTest {
 
     private MockMvc mockMvc;
-
     @Mock
     private UserService userService;
-
     @Mock
     private JdbcTemplate jdbcTemplate;
-
     @InjectMocks
     private UserController userController;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

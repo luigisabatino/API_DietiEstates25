@@ -2,25 +2,17 @@ package com.api.dietiestates25.service.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.model.UserModel;
-import com.api.dietiestates25.model.dto.user.LoginDTO;
-import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.UserService;
-import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
-
-
-import java.util.ArrayList;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;

@@ -31,7 +31,7 @@ public class ImageService {
 
     AmazonS3 client;
 
-    public void initialize() {
+    private void initialize() {
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
         client = AmazonS3ClientBuilder.standard()
                 .withRegion(awsRegion)
@@ -67,7 +67,6 @@ public class ImageService {
     }
 
     public boolean deleteImagesByPrefix(String prefix) {
-        initialize();
         try {
             List<ImageDTO> images = getImagesByPrefix(prefix);
             for(var img : images) {

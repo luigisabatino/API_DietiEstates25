@@ -31,16 +31,6 @@ public class AdController {
         this.adService = adService;
         this.cityService = cityService;
     }
-    /*@GetMapping("/test")
-    public ResponseEntity<List<OpenstreetResponse>> test(String address, String zipCode)
-    {
-        try {
-            return ResponseEntity.ok(apiService.coordinatesFromAddress(address + " " + zipCode));
-        }
-        catch(Exception ex) {
-            return ResponseEntity.ok(null);
-        }
-    }*/
     @PostMapping("/insertAd")
     public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
     {

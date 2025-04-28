@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,19 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CreateAgentTest {
 
     private MockMvc mockMvc;
-
     @Mock
     private UserService userService;
-
     @Mock
     private EmailService emailService;
-
     @Mock
     private JdbcTemplate jdbcTemplate;
-
     @InjectMocks
     private UserController userController;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

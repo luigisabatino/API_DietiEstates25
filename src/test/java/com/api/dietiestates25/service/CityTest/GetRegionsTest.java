@@ -1,10 +1,7 @@
 package com.api.dietiestates25.service.CityTest;
 
 import com.api.dietiestates25.controller.CityController;
-import com.api.dietiestates25.controller.UserController;
-import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.service.CityService;
-import com.api.dietiestates25.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,11 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

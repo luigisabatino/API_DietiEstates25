@@ -2,7 +2,6 @@ package com.api.dietiestates25.service.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.model.dto.user.CreateUserDTO;
-import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
@@ -25,19 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CreateUserTest {
 
     private MockMvc mockMvc;
-
     @Mock
     private UserService userService;
-
     @Mock
     private EmailService emailService;
-
     @Mock
     private JdbcTemplate jdbcTemplate;
-
     @InjectMocks
     private UserController userController;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

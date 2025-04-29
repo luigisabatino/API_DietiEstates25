@@ -15,7 +15,8 @@ public class AdModel {
     private double price;
     private String city;
     private String address;
-    private String agent;
+    //private String agentEmail;
+    private UserModel agent;
     private int nRooms;
     private int nBathrooms;
     private int floor;
@@ -58,7 +59,13 @@ public class AdModel {
             price = rs.getDouble("price");
             city = rs.getString("city");
             address = rs.getString("address");
-            agent = rs.getString("agent");
+            agent = new UserModel();
+            agent.setEmail(rs.getString("email"));
+            agent.setFirstName(rs.getString("firstname"));
+            agent.setLastName(rs.getString("lastname"));
+            agent.setCompany(rs.getString("company"));
+            agent.setCompanyName(rs.getString("companyname"));
+            agent.setConfirmed(true);
             nRooms = rs.getInt("n_rooms");
             nBathrooms = rs.getInt("n_bathrooms");
             floor = rs.getInt("floor");

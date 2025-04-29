@@ -15,8 +15,7 @@ public class AdModel {
     private double price;
     private String city;
     private String address;
-    //private String agentEmail;
-    private UserModel agent;
+    private String agent;
     private int nRooms;
     private int nBathrooms;
     private int floor;

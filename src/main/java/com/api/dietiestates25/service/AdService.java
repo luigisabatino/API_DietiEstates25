@@ -1,6 +1,7 @@
 package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.AdModel;
+import com.api.dietiestates25.model.extention.AdWithGeoDataModel;
 import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,14 +20,14 @@ public class AdService {
                 sessionId, ad.getPrice(), ad.getCity(), ad.getAddress(), ad.getNRooms(), ad.getNBathrooms(), ad.getFloor(), ad.isLift(), ad.getEnergyClass(), ad.getDescription(), ad.getType(), ad.getDimentions(), ad.getCoordinates(), ad.isSchool350m(), ad.isPublicTransport350m(), ad.isLeisurePark350m(), ad.isPrivateGarage(), ad.isCondominiumParking(), ad.isDoormanService(), ad.isAirConditioning()
         )) );
     }
-    public List<AdModel> searchAd(JdbcTemplate jdbcTemplate, SearchAdRequest ad) {
+    public List<AdWithGeoDataModel> searchAd(JdbcTemplate jdbcTemplate, SearchAdRequest ad) {
         if(ad.getId() > 0) {
-            var response = new ArrayList<AdModel>();
+            var response = new ArrayList<AdWithGeoDataModel>();
             response.add(getAdById(jdbcTemplate, ad.getId()));
             return response;
         }
         requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
-        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE AGENT LIKE ? AND PRICE BETWEEN ? AND ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?;";
+        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE EMAIL LIKE ? AND PRICE BETWEEN ? AND ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?;";
         return (jdbcTemplate.query(query, new Object[]{
                 "%" + ad.getAgent() + "%",
                 ad.getPrice(),
@@ -37,15 +38,11 @@ public class AdService {
                 ad.getType(),
                 "%" + ad.getProvince() + "%",
                 "%" + ad.getRegion() + "%",
-                "%" + ad.getCity() + "%" }, (rs, rowNum) -> {
-            return new AdModel(rs);
-        }));
+                "%" + ad.getCity() + "%" }, (rs, rowNum) -> new AdWithGeoDataModel(rs)));
     }
-    public AdModel getAdById(JdbcTemplate jdbcTemplate, int id) {
+    public AdWithGeoDataModel getAdById(JdbcTemplate jdbcTemplate, int id) {
         String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE ID_AD = ?";
-        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
-            return new AdModel(rs);
-        }, id);
+        return jdbcTemplate.queryForObject(query, (rs, ignored) -> new AdWithGeoDataModel(rs), id);
     }
     public int deleteAd(JdbcTemplate jdbcTemplate, String sessionId, int id) {
         String query = "SELECT * FROM DELETE_AD(?,?)";
@@ -67,11 +64,9 @@ public class AdService {
             throw new RequiredParameterException("ad type");
         if((operation == Operation.InsertAd)&&(ad.getDimentions()==0))
             throw new RequiredParameterException("dimentions");
-        /*if((operation == Operation.InsertAd)&&(ad.getCoordinates()==null||ad.getCoordinates().isBlank()))
-            throw new RequiredParameterException("coordinates");*/
     }
     public enum Operation {
         InsertAd,
-        SearchAd;
+        SearchAd
     }
 }

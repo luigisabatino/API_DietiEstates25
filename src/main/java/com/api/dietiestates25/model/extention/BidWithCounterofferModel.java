@@ -11,6 +11,8 @@ import java.sql.SQLException;
 @Setter
 public class BidWithCounterofferModel extends BidModel {
     private CounterOfferModel counterOffer;
+    private String firstname;
+    private String lastname;
     public BidWithCounterofferModel() {
         super();
         counterOffer = new CounterOfferModel();
@@ -22,6 +24,8 @@ public class BidWithCounterofferModel extends BidModel {
                 counterOffer = new CounterOfferModel(rs,true);
             else
                 counterOffer = null;
+            firstname = rs.getString("firstname");
+            lastname = rs.getString("lastname");
         }
         catch(SQLException ex) {
             //TO DO

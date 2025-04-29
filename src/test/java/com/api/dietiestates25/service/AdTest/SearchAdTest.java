@@ -2,6 +2,7 @@ package com.api.dietiestates25.service.AdTest;
 
 import com.api.dietiestates25.controller.AdController;
 import com.api.dietiestates25.model.AdModel;
+import com.api.dietiestates25.model.extention.AdWithGeoDataModel;
 import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.service.AdService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
@@ -36,8 +37,8 @@ class SearchAdTest {
         mockMvc = MockMvcBuilders.standaloneSetup(adController).build();
         SearchAdRequest dto = new SearchAdRequest();
         dto.setType("S");
-        AdModel adElement = new AdModel();
-        List<AdModel> ads = new ArrayList<AdModel>();
+        AdWithGeoDataModel adElement = new AdWithGeoDataModel();
+        List<AdWithGeoDataModel> ads = new ArrayList<AdWithGeoDataModel>();
         ads.add(adElement);
         when(adService.searchAd(any(), any())).thenReturn(ads);
         mockMvc.perform(put("/searchAd")

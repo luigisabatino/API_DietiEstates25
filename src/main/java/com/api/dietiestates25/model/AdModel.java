@@ -32,9 +32,6 @@ public class AdModel {
     private boolean condominiumParking;
     private boolean doormanService;
     private boolean airConditioning;
-    private String cityName;
-    private String region;
-    private String province;
 
     public AdModel() { }
     public AdModel(InsertAdDTO insertAdDTO) {
@@ -78,9 +75,6 @@ public class AdModel {
             condominiumParking = rs.getBoolean("condominium_parking");
             doormanService = rs.getBoolean("doorman_service");
             airConditioning = rs.getBoolean("air_conditioning");
-            cityName = rs.getString("city_name");
-            region = rs.getString("region");
-            province = rs.getString("province");
         }
         catch(SQLException ex) {
             //TO DO

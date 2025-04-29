@@ -5,10 +5,27 @@ import com.api.dietiestates25.model.AdModel;
 import lombok.Setter;
 import lombok.Getter;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 @Getter
 @Setter
 public class SearchAdRequest extends AdModel {
     private double maxPrice;
+    private String region;
+    private String province;
+    public SearchAdRequest() {}
+    public SearchAdRequest(ResultSet rs) {
+        super(rs);
+        try {
+            region = rs.getString("region");
+            province = rs.getString("province");
+        }
+        catch(SQLException ex) {
+            //TO DO
+        }
+    }
+
     public double getMaxPrice() {
         return ((maxPrice==0) ? Double.MAX_VALUE : maxPrice);
     }
@@ -16,10 +33,10 @@ public class SearchAdRequest extends AdModel {
         return ((super.getAgent()==null) ? "" : super.getAgent());
     }
     public String getProvince() {
-        return ((super.getProvince()==null) ? "" : super.getProvince());
+        return ((province==null) ? "" : province);
     }
     public String getRegion() {
-        return ((super.getRegion()==null) ? "" : super.getRegion());
+        return ((region==null) ? "" : region);
     }
     public String getCity() {
         return ((super.getCity()==null) ? "" : super.getCity());

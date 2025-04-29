@@ -2,6 +2,7 @@ package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.dto.ad.InsertAdDTO;
+import com.api.dietiestates25.model.extention.AdWithGeoDataModel;
 import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.model.response.CodeEntitiesResponse;
 import com.api.dietiestates25.model.response.CodeResponse;
@@ -54,9 +55,9 @@ public class AdController {
         }
     }
     @PutMapping("/searchAd")
-    public ResponseEntity<DetailEntityDTO<AdModel>> searchAd(@RequestBody SearchAdRequest request)
+    public ResponseEntity<DetailEntityDTO<AdWithGeoDataModel>> searchAd(@RequestBody SearchAdRequest request)
     {
-        var response = new CodeEntitiesResponse<AdModel>();
+        var response = new CodeEntitiesResponse<AdWithGeoDataModel>();
         try {
             response.setEntities(adService.searchAd(jdbcTemplate, request));
             return response.toHttpEntitiesResponse();

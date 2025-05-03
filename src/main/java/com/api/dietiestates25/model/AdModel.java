@@ -58,13 +58,6 @@ public class AdModel {
             price = rs.getDouble("price");
             city = rs.getString("city");
             address = rs.getString("address");
-            agent = new UserModel();
-            agent.setEmail(rs.getString("email"));
-            agent.setFirstName(rs.getString("firstname"));
-            agent.setLastName(rs.getString("lastname"));
-            agent.setCompany(rs.getString("company"));
-            agent.setCompanyName(rs.getString("companyname"));
-            agent.setConfirmed(true);
             nRooms = rs.getInt("n_rooms");
             nBathrooms = rs.getInt("n_bathrooms");
             floor = rs.getInt("floor");

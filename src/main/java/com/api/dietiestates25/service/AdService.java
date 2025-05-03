@@ -21,16 +21,17 @@ public class AdService {
         )) );
     }
     public List<AdWithGeoDataModel> searchAd(JdbcTemplate jdbcTemplate, SearchAdRequest ad) {
-        if(ad.getId() > 0) {
+        if(ad.getId() >= 0 && ad.areOtherFieldsEmpty()) {
             var response = new ArrayList<AdWithGeoDataModel>();
             response.add(getAdById(jdbcTemplate, ad.getId()));
             return response;
         }
         requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
-        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE EMAIL LIKE ? AND PRICE BETWEEN ? AND ? AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?;";
-        return (jdbcTemplate.query(query, new Object[]{
+        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE EMAIL LIKE ? AND (PRICE >= ? AND (? IS NULL OR ? = 0 OR PRICE <= ?)) AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?";        return (jdbcTemplate.query(query, new Object[]{
                 "%" + ad.getAgent() + "%",
                 ad.getPrice(),
+                ad.getMaxPrice(),
+                ad.getMaxPrice(),
                 ad.getMaxPrice(),
                 "%" + ad.getAddress() + "%",
                 ad.getNRooms(),
@@ -41,6 +42,11 @@ public class AdService {
                 "%" + ad.getCity() + "%" }, (rs, rowNum) -> new AdWithGeoDataModel(rs)));
     }
     public AdWithGeoDataModel getAdById(JdbcTemplate jdbcTemplate, int id) {
+        if (id == 0) {
+            String query = "SELECT * FROM ads_with_geo_data ORDER BY id_ad DESC LIMIT 1";
+            return jdbcTemplate.queryForObject(query, (rs, ignored) -> new AdWithGeoDataModel(rs));
+        }
+        
         String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE ID_AD = ?";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> new AdWithGeoDataModel(rs), id);
     }

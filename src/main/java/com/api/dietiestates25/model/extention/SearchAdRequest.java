@@ -44,4 +44,8 @@ public class SearchAdRequest extends AdModel {
     public String getAddress() {
         return ((super.getAddress()==null) ? "" : super.getAddress());
     }
+
+    public boolean areOtherFieldsEmpty() {
+        return maxPrice == 0 && super.getAgent() == null && province == null && region == null && super.getCity() == null && super.getAddress() == null && super.getNBathrooms() <= 0 && super.getNRooms() <= 0;
+    }
 }

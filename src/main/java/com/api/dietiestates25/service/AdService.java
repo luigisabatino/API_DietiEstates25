@@ -26,20 +26,49 @@ public class AdService {
             response.add(getAdById(jdbcTemplate, ad.getId()));
             return response;
         }
+
         requiredValuesForAdOperations(ad, AdService.Operation.SearchAd);
-        String query = "SELECT * FROM ADS_WITH_GEO_DATA WHERE EMAIL LIKE ? AND (PRICE >= ? AND (? IS NULL OR ? = 0 OR PRICE <= ?)) AND ADDRESS LIKE ? AND N_ROOMS >= ? AND N_BATHROOMS >= ? AND AD_TYPE = ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?";        return (jdbcTemplate.query(query, new Object[]{
+        String query = """
+            SELECT * FROM ADS_WITH_GEO_DATA
+            WHERE EMAIL LIKE ?
+            AND (PRICE >= ? AND (? IS NULL OR ? = 0 OR PRICE <= ?))
+            AND N_ROOMS >= ?
+            AND N_BATHROOMS >= ?
+            AND AD_TYPE LIKE ?
+        """;
+
+        if (!ad.getLocationAny().isBlank()) {
+            query += """
+                AND (
+                   ADDRESS LIKE ?
+                    OR PROVINCE LIKE ?
+                    OR REGION LIKE ?
+                    OR city_name LIKE ?
+                )
+            """;
+
+            ad.setAddress(ad.getLocationAny());
+            ad.setProvince(ad.getLocationAny());
+            ad.setRegion(ad.getLocationAny());
+            ad.setCity(ad.getLocationAny());
+        }
+        else
+            query += "AND ADDRESS LIKE ? AND PROVINCE LIKE ? AND REGION LIKE ? AND CITY LIKE ?";
+
+        return (jdbcTemplate.query(query, new Object[]{
                 "%" + ad.getAgent() + "%",
                 ad.getPrice(),
                 ad.getMaxPrice(),
                 ad.getMaxPrice(),
                 ad.getMaxPrice(),
-                "%" + ad.getAddress() + "%",
                 ad.getNRooms(),
                 ad.getNBathrooms(),
-                ad.getType(),
+                "%" + ad.getType() + "%",
+                "%" + ad.getAddress() + "%",
                 "%" + ad.getProvince() + "%",
                 "%" + ad.getRegion() + "%",
-                "%" + ad.getCity() + "%" }, (rs, rowNum) -> new AdWithGeoDataModel(rs)));
+                "%" + ad.getCity() + "%"
+        }, (rs, rowNum) -> new AdWithGeoDataModel(rs)));
     }
     public AdWithGeoDataModel getAdById(JdbcTemplate jdbcTemplate, int id) {
         if (id == 0) {
@@ -66,7 +95,7 @@ public class AdService {
             throw new RequiredParameterException("number of rooms");
         if((operation == Operation.InsertAd)&&(ad.getNBathrooms()==0))
             throw new RequiredParameterException("number of bathrooms");
-        if((operation == Operation.InsertAd || operation == Operation.SearchAd)&&(ad.getType()==null||ad.getType().isBlank()))
+        if((operation == Operation.InsertAd)&&(ad.getType()==null||ad.getType().isBlank()))
             throw new RequiredParameterException("ad type");
         if((operation == Operation.InsertAd)&&(ad.getDimentions()==0))
             throw new RequiredParameterException("dimentions");

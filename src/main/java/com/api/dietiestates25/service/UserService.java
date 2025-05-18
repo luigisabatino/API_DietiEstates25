@@ -72,13 +72,13 @@ public class UserService {
     }
     public List<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
         var response = new ArrayList<UserModel>();
-        String query = "SELECT * FROM USERS U LEFT JOIN COMPANIES C ON U.COMPANY = C.VATNUMBER WHERE U.COMPANY = ? AND CONFIRMED = TRUE";
+        String query = "USER_COMPANY WHERE U.COMPANY = ? AND CONFIRMED = TRUE";
         return (jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
             return new UserModel(rs);
         }));
     }
     public UserModel getUserByEmail(JdbcTemplate jdbcTemplate, String email) {
-        String query = "SELECT * FROM USERS U LEFT JOIN COMPANIES C ON U.COMPANY = C.VATNUMBER WHERE EMAIL = ?";
+        String query = "SELECT * FROM USER_COMPANY WHERE EMAIL = ?";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new UserModel(rs);
         }, email);

@@ -57,19 +57,19 @@ public class BidService {
         return response;
     }
     private List<BidWithCounterofferModel> getBidsFromAd(JdbcTemplate jdbcTemplate, int ad) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid, C.amount as co_amount, C.status as co_status, U.firstname, U.lastname FROM bids B LEFT JOIN counteroffer C ON B.BID_ID = C.PARENT_BID LEFT JOIN users U ON offerer = email WHERE B.ad = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.ad = ?";
         return (jdbcTemplate.query(query, new Object[]{ad}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     private List<BidWithCounterofferModel> getBidsFromOfferer(JdbcTemplate jdbcTemplate, String offerer) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status, U.firstname, U.lastname FROM bids B LEFT JOIN counteroffer C ON B.bid_id = C.parent_bid LEFT JOIN users U ON offerer = email WHERE B.offerer = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.offerer = ?";
         return (jdbcTemplate.query(query, new Object[]{offerer}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     public BidWithCounterofferModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
-        String query = "SELECT B.*, C.co_id, C.parent_bid,C.amount as co_amount, C.status as co_status, U.firstname, U.lastname FROM bids B LEFT JOIN counteroffer C ON B.bid_id = C.parent_bid LEFT JOIN users U ON offerer = email WHERE B.bid_id = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.bid_id = ?";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new BidWithCounterofferModel(rs);
         }, id);

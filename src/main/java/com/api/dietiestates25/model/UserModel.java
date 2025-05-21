@@ -6,6 +6,8 @@ import com.api.dietiestates25.model.dto.user.LoginDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;

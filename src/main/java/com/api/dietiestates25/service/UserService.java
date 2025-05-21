@@ -3,6 +3,7 @@ package com.api.dietiestates25.service;
 import com.api.dietiestates25.throwable.*;
 import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.UserModel;
+import org.apache.logging.log4j.util.InternalException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,10 +15,13 @@ import java.util.List;
 @Component
 public class UserService {
     public UserService() {}
-    public CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
+    public  CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user) {
+        return login(jdbcTemplate, user,false);
+    }
+    private CodeResponse login(JdbcTemplate jdbcTemplate, UserModel user, boolean is3part) {
         requiredValuesForUserOperations(user, Operation.Login);
         CodeResponse response = new CodeResponse();
-        String pwdInDB = checkPwd(jdbcTemplate, user);
+        String pwdInDB = checkPwd(jdbcTemplate, user, is3part);
         String query = "SELECT * FROM LOGIN(?, ?)";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
                 response.setMessage(rs.getString("session_id"));
@@ -25,7 +29,7 @@ public class UserService {
                 return response;
                 }, user.getEmail(), pwdInDB);
     }
-    private String checkPwd(JdbcTemplate jdbcTemplate, UserModel user) {
+    private String checkPwd(JdbcTemplate jdbcTemplate, UserModel user, boolean is3part) {
         String pwdInDB;
         try {
             String query = "SELECT PWD FROM USERS WHERE email = ?";
@@ -34,9 +38,12 @@ public class UserService {
             throw new NoMatchCredentialsException();
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(!encoder.matches(user.getPwd(),pwdInDB))
+        if((!encoder.matches(user.getPwd(),pwdInDB))&&(!is3part))
             throw new NoMatchCredentialsException();
         return pwdInDB;
+    }
+    private String checkPwd(JdbcTemplate jdbcTemplate, UserModel user) {
+        return checkPwd(jdbcTemplate, user, false);
     }
     public int createUser(JdbcTemplate jdbcTemplate, UserModel user) {
         requiredValuesForUserOperations(user, Operation.CreateUser);
@@ -97,6 +104,19 @@ public class UserService {
         user.setOtp();
         var query = "UPDATE USERS SET OTP = ? WHERE EMAIL = ?";
         return (jdbcTemplate.update(query, user.getOtp(), user.getEmail()) > 0);
+    }
+    public CodeResponse load3partUser(JdbcTemplate jdbcTemplate, UserModel user)  {
+        user.setPwd();
+        user.encodePwd();
+        try {
+            getUserByEmail(jdbcTemplate, user.getEmail());
+        }
+        catch (EmptyResultDataAccessException ex) {
+            user.setOtp();
+            if((createUser(jdbcTemplate, user) != 0) || (confirmUser(jdbcTemplate, user) != 0))
+                throw new InternalException("Internal Error");
+        }
+        return login(jdbcTemplate, user, true);
     }
     public static void requiredValuesForUserOperations(UserModel user, Operation operation) {
         if((operation != Operation.AgentsByCompany) && (user.getEmail() == null || user.getEmail().isBlank()))

@@ -8,10 +8,14 @@ import com.api.dietiestates25.model.response.CodeResponse;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.EmailService;
+import com.api.dietiestates25.service.OAuthService;
 import com.api.dietiestates25.service.UserService;
 import com.api.dietiestates25.throwable.NoMatchCredentialsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,10 +24,12 @@ public class UserController {
     private final JdbcTemplate jdbcTemplate;
     private final UserService userService;
     private final EmailService emailService;
-    public UserController(JdbcTemplate jdbcTemplate,UserService userService, EmailService emailService) {
+    private final OAuthService oAuthService;
+    public UserController(JdbcTemplate jdbcTemplate,UserService userService, EmailService emailService, OAuthService oAuthService) {
         this.jdbcTemplate = jdbcTemplate;
         this.emailService = emailService;
         this.userService = userService;
+        this.oAuthService = oAuthService;
     }
     @PostMapping("/login")
     public ResponseEntity<DetailEntityDTO<UserModel>> login(@RequestBody LoginDTO dto) {
@@ -136,6 +142,24 @@ public class UserController {
         }
         catch(Exception ex) {
             return response.toHttpMessageResponse(ex);
+        }
+    }
+    @GetMapping("/login3part")
+    public ResponseEntity<DetailEntityDTO<UserModel>> login3part(@RequestParam String code) {
+        var response = new CodeEntitiesResponse<UserModel>();
+        try {
+            UserModel user = oAuthService.getUserInfoFromCode(code);
+            if(user == null) {
+                response.setCode(-6);
+                return response.toHttpEntitiesResponse();
+            }
+            response = new CodeEntitiesResponse<UserModel>(userService.load3partUser(jdbcTemplate, user));
+            if(response.getCode() == 0) {
+                response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
+            }
+            return response.toHttpEntitiesResponse();
+        } catch (Exception ex) {
+            return response.toHttpEntitiesResponse(ex);
         }
     }
 }

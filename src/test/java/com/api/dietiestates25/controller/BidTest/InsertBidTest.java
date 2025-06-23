@@ -1,4 +1,4 @@
-package com.api.dietiestates25.service.BidTest;
+package com.api.dietiestates25.controller.BidTest;
 
 import com.api.dietiestates25.controller.BidController;
 import com.api.dietiestates25.model.dto.ad.InsertAdDTO;

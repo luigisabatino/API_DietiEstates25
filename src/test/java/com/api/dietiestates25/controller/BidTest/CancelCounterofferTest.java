@@ -1,9 +1,7 @@
-package com.api.dietiestates25.service.BidTest;
+package com.api.dietiestates25.controller.BidTest;
 
 import com.api.dietiestates25.controller.BidController;
-import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import com.api.dietiestates25.service.BidService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class CancelBidTest {
+class CancelCounterofferTest {
 
     private MockMvc mockMvc;
     @Mock
@@ -29,12 +27,12 @@ class CancelBidTest {
     private BidController bidController;
 
     @Test
-    void testCancelBid_Success() throws Exception {
+    void testCancelCounteroffer_Success() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(bidController).build();
-        when(bidService.cancelBid(any(), any(),anyInt())).thenReturn(0);
-        mockMvc.perform(put("/cancelBid")
+        when(bidService.cancelCounteroffer(any(), any(),anyInt())).thenReturn(0);
+        mockMvc.perform(put("/cancelCounteroffer")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("bidId","123")
+                        .param("coId","123")
                         .header("sessionId", "sessionIdTest"))
                 .andExpect(status().isOk());
     }

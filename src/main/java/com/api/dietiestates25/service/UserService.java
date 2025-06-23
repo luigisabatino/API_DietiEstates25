@@ -23,11 +23,12 @@ public class UserService {
         CodeResponse response = new CodeResponse();
         String pwdInDB = checkPwd(jdbcTemplate, user, is3part);
         String query = "SELECT * FROM LOGIN(?, ?)";
-        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
-                response.setMessage(rs.getString("session_id"));
-                response.setCode(rs.getInt("code"));
-                return response;
-                }, user.getEmail(), pwdInDB);
+        var resp = jdbcTemplate.queryForObject(query, (rs, ignored) -> {
+            response.setMessage(rs.getString("session_id"));
+            response.setCode(rs.getInt("code"));
+            return response;
+        }, user.getEmail(), pwdInDB);
+        return resp;
     }
     private String checkPwd(JdbcTemplate jdbcTemplate, UserModel user, boolean is3part) {
         String pwdInDB;
@@ -79,14 +80,14 @@ public class UserService {
     }
     public List<UserModel> getAgentsByCompany(JdbcTemplate jdbcTemplate, String company) {
         var response = new ArrayList<UserModel>();
-        String query = "USER_COMPANY WHERE U.COMPANY = ? AND CONFIRMED = TRUE";
+        String query = "SELECT * FROM USER_COMPANY WHERE COMPANY = ? AND CONFIRMED = TRUE";
         return (jdbcTemplate.query(query, new Object[]{company}, (rs, rowNum) -> {
             return new UserModel(rs);
         }));
     }
     public UserModel getUserByEmail(JdbcTemplate jdbcTemplate, String email) {
         String query = "SELECT * FROM USER_COMPANY WHERE EMAIL = ?";
-        return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
+            return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new UserModel(rs);
         }, email);
     }
@@ -103,7 +104,8 @@ public class UserService {
     public boolean insertOtp(JdbcTemplate jdbcTemplate, UserModel user) {
         user.setOtp();
         var query = "UPDATE USERS SET OTP = ? WHERE EMAIL = ?";
-        return (jdbcTemplate.update(query, user.getOtp(), user.getEmail()) > 0);
+        var resp = jdbcTemplate.update(query, user.getOtp(), user.getEmail());
+        return resp > 0;
     }
     public CodeResponse load3partUser(JdbcTemplate jdbcTemplate, UserModel user)  {
         user.setPwd();

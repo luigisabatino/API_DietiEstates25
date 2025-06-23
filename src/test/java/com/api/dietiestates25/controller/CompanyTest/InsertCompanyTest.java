@@ -1,4 +1,4 @@
-package com.api.dietiestates25.service.CompanyTest;
+package com.api.dietiestates25.controller.CompanyTest;
 
 import com.api.dietiestates25.controller.CompanyController;
 import com.api.dietiestates25.model.UserModel;

@@ -1,4 +1,4 @@
-package com.api.dietiestates25.service.CityTest;
+package com.api.dietiestates25.controller.CityTest;
 
 import com.api.dietiestates25.controller.CityController;
 import com.api.dietiestates25.service.CityService;

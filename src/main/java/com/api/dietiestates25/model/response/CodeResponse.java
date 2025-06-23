@@ -14,6 +14,11 @@ public class CodeResponse  {
     private int code;
     private String message;
 
+    public CodeResponse(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+    public CodeResponse() {}
     protected void setMessageFromCode() {
         switch (code) {
             case 0:

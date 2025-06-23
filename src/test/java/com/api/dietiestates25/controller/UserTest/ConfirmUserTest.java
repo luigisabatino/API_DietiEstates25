@@ -1,4 +1,4 @@
-package com.api.dietiestates25.service.UserTest;
+package com.api.dietiestates25.controller.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.model.dto.user.ConfirmUserDTO;

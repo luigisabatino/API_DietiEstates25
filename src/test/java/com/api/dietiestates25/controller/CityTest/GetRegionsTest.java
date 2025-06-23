@@ -1,7 +1,6 @@
-package com.api.dietiestates25.service.CityTest;
+package com.api.dietiestates25.controller.CityTest;
 
 import com.api.dietiestates25.controller.CityController;
-import com.api.dietiestates25.model.CityModel;
 import com.api.dietiestates25.service.CityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class GetCitiesTest {
+class GetRegionsTest {
     private MockMvc mockMvc;
     @Mock
     private CityService cityService;
@@ -28,14 +27,13 @@ class GetCitiesTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void testGetCities_Success() throws Exception {
+    void testGetRegions_Success() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(cityController).build();
-        List<CityModel> citiesRet = new ArrayList<>();
-        citiesRet.add(new CityModel());
-        when(cityService.getItalianCitiesByProvince(any(), any()))
-                .thenReturn(citiesRet);
-        mockMvc.perform(get("/getCities")
-                        .param("province","testProvince"))
+        List<String> regionsRet = new ArrayList<>();
+        regionsRet.add("");
+        when(cityService.getItalianRegions(any()))
+                .thenReturn(regionsRet);
+        mockMvc.perform(get("/getRegions"))
                 .andExpect(status().isOk());
     }
 }

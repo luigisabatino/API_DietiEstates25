@@ -1,4 +1,4 @@
-package com.api.dietiestates25.service.AdTest;
+package com.api.dietiestates25.controller.AdTest;
 
 import com.api.dietiestates25.controller.AdController;
 import com.api.dietiestates25.model.AdModel;

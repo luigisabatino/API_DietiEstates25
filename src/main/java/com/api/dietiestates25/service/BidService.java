@@ -57,19 +57,19 @@ public class BidService {
         return response;
     }
     private List<BidWithCounterofferModel> getBidsFromAd(JdbcTemplate jdbcTemplate, int ad) {
-        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.ad = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE ad = ?";
         return (jdbcTemplate.query(query, new Object[]{ad}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     private List<BidWithCounterofferModel> getBidsFromOfferer(JdbcTemplate jdbcTemplate, String offerer) {
-        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.offerer = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE offerer = ?";
         return (jdbcTemplate.query(query, new Object[]{offerer}, (rs, rowNum) -> {
             return new BidWithCounterofferModel(rs);
         }));
     }
     public BidWithCounterofferModel getBidFromId(JdbcTemplate jdbcTemplate, int id) {
-        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.bid_id = ?";
+        String query = "SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE bid_id = ?";
         return jdbcTemplate.queryForObject(query, (rs, ignored) -> {
             return new BidWithCounterofferModel(rs);
         }, id);

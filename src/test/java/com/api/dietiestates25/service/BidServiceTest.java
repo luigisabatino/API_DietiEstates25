@@ -90,7 +90,7 @@ class BidServiceTest {
     public void TestGetBidsByAdSuccess() {
         var bidCo = new BidWithCounterofferModel();
         when(jdbcTemplate.query(
-                eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.ad = ?"),
+                eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE ad = ?"),
                 any(Object[].class),
                 any(RowMapper.class)
         )).thenReturn(List.of(bidCo));
@@ -112,7 +112,7 @@ class BidServiceTest {
     public void TestGetBidsByOffererSuccess() {
         var bidCo = new BidWithCounterofferModel();
         when(jdbcTemplate.query(
-                eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.offerer = ?"),
+                eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE offerer = ?"),
                 any(Object[].class),
                 any(RowMapper.class)
         )).thenReturn(List.of(bidCo));

@@ -18,58 +18,77 @@ import com.api.dietiestates25.model.response.CodeResponse;
 
 @Component
 public class ExternalApiService {
+
     @Value("${apilayer.url}")
     private String apilayerUrl;
 
     @Value("${geoapify.url}")
     private String geoUrl;
+
     @Value("${geoapify.categories}")
     private String geoCategories;
+
     @Value("${geoapify.radius}")
     private String geoRadius;
+
     @Value("${openstreet.url}")
     private String openstreetUrl;
 
-    public int verifyVatNumber(String vatNumber) throws java. io. IOException, InterruptedException {
+    private final HttpClient httpClient;
+
+    public ExternalApiService(HttpClient _httpClient) {
+        httpClient = _httpClient;
+    }
+
+    public int verifyVatNumber(String vatNumber) throws java.io.IOException, InterruptedException {
         String requestUrl = apilayerUrl + "&vat_number=" + vatNumber;
-        HttpClient client = HttpClient.newHttpClient();
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUrl))
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        if(response.body().contains("\"valid\":true"))
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.body().contains("\"valid\":true"))
             return 0;
+
         return -97;
     }
-    public GeoapifyResponse placesInterestNearby(String coordinates) throws java. io. IOException, InterruptedException {
-        if(coordinates==null||coordinates.isBlank())
+
+    public GeoapifyResponse placesInterestNearby(String coordinates) throws java.io.IOException, InterruptedException {
+        if (coordinates == null || coordinates.isBlank())
             throw new RequiredParameterException("coordinates");
-        String requestUrl =  geoUrl
-                .replaceAll("CTEGORIES",geoCategories)
+
+        String requestUrl = geoUrl
+                .replaceAll("CTEGORIES", geoCategories)
                 .replaceAll("COORDINATS", coordinates)
-                .replaceAll("RDIUS",geoRadius);
-        HttpClient client = HttpClient.newHttpClient();
+                .replaceAll("RDIUS", geoRadius);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUrl))
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(response.body(), GeoapifyResponse.class);
     }
-    public List<OpenstreetResponse> coordinatesFromAddress(String address)  throws java. io. IOException, InterruptedException {
-        if(address==null||address.isBlank())
+
+    public List<OpenstreetResponse> coordinatesFromAddress(String address) throws java.io.IOException, InterruptedException {
+        if (address == null || address.isBlank())
             throw new RequiredParameterException("address");
-        address = address.replaceAll(" ","+");
-        String requestUrl =  openstreetUrl + "q=" + address + "&format=json";
-        HttpClient client = HttpClient.newHttpClient();
+
+        address = address.replaceAll(" ", "+");
+        String requestUrl = openstreetUrl + "q=" + address + "&format=json";
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUrl))
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(response.body(), new TypeReference<List<OpenstreetResponse>>() {});
+        return objectMapper.readValue(response.body(), new com.fasterxml.jackson.core.type.TypeReference<List<OpenstreetResponse>>() {});
     }
 }

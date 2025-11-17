@@ -33,32 +33,49 @@ public class EmailService {
     private String subject;
     private String body;
 
+    private final AmazonSimpleEmailService emailClient;
 
-    private void sendEmail(String _toAddress, String _subject, String _body) {
+    public EmailService(AmazonSimpleEmailService _emailClient,
+                        @Value("${aws.access.key}") String awsAccessKey,
+                        @Value("${aws.secret.key}") String awsSecretKey,
+                        @Value("${aws.region}") String awsRegion,
+                        @Value("${email.sender}") String fromAddress) {
+        this.emailClient = _emailClient;
+        this.awsAccessKey = awsAccessKey;
+        this.awsSecretKey = awsSecretKey;
+        this.awsRegion = awsRegion;
+        this.fromAddress = fromAddress;
+    }
+
+    private boolean sendEmail(String _toAddress, String _subject, String _body) {
         toAddress = _toAddress;
         subject = _subject;
         body = _body;
-        sendEmail();
+        return sendEmail();
     }
 
-    private void sendEmail() {
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
-        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+    private boolean sendEmail() {
+        try {
+            BasicAWSCredentials awsCredentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
+        /*AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
                 .withRegion(this.awsRegion)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();
-
-        SendEmailRequest request = new SendEmailRequest()
-                .withSource(fromAddress)
-                .withDestination(new Destination().withToAddresses(toAddress))
-                .withMessage(new Message()
-                        .withSubject(new Content().withData(subject))
-                        .withBody(new Body()
-                                .withHtml(new Content().withData(body))
-                                .withText(new Content().withData("Please view this email in a web browser."))  // Se HTML fallisce
-                        ));
-
-        client.sendEmail(request);
+                .build();*/
+            SendEmailRequest request = new SendEmailRequest()
+                    .withSource(fromAddress)
+                    .withDestination(new Destination().withToAddresses(toAddress))
+                    .withMessage(new Message()
+                            .withSubject(new Content().withData(subject))
+                            .withBody(new Body()
+                                    .withHtml(new Content().withData(body))
+                                    .withText(new Content().withData("Please view this email in a web browser."))  // Se HTML fallisce
+                            ));
+            emailClient.sendEmail(request);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
     private void sendEmail(List<String> emails) {
@@ -69,25 +86,23 @@ public class EmailService {
 
     public boolean sendConfirmAccountEmail(UserModel user, char usertype) {
         try {
-            sendEmail(
+            return sendEmail(
                     user.getEmail(),
                     "DietiEstates Account Verification",
                     (usertype=='U') ?
                             templateOTP(user.getFirstName(), user.getOtp(), OtpKey.CreateUser)
                             : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),((usertype=='A')?"Agent":"Manager"))
             );
-            return true;
         } catch (Exception ex) {
             return false;
         }
     }
     public boolean sendOtpEmail(UserModel user, OtpKey key) {
         try {
-            sendEmail(
+            return sendEmail(
                     user.getEmail(),
                     "DietiEstates " + (key.equals(OtpKey.ChangePwd) ? "Password Change" : "Account Verification"),
                     templateOTP("", user.getOtp(), key));
-            return true;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return false;
@@ -118,4 +133,3 @@ public class EmailService {
         };
     }
 }
-

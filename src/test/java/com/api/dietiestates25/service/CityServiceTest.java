@@ -67,7 +67,7 @@ class CityServiceTest {
         assertEquals(cityList, response);
     }
     @Test
-    public void TestGetCityNameByCode() {
+    public void TestGetCityNameByCodeSuccess() {
         when(jdbcTemplate.queryForObject(eq("SELECT NAME FROM ITALIAN_CITIES WHERE ISTAT_CODE = ?"),eq(String.class),
                 any()))
                 .thenReturn("Napoli");

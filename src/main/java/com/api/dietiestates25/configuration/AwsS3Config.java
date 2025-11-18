@@ -10,13 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AwsS3Config {
 
-    @Value("${AWS_ACCESS_KEY_ID}")
-    private String awsAccessKey;
-
-    @Value("${AWS_SECRET_ACCESS_KEY}")
-    private String awsSecretKey;
-
-    @Value("${AWS_REGION}")
+    @Value("${aws.region}")
     private String awsRegion;
 
     @Bean

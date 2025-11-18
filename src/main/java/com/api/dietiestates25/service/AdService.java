@@ -69,8 +69,7 @@ public class AdService {
                     ps.setString(9, "%" + ad.getAddress() + "%");
                     ps.setString(10, "%" + ad.getProvince() + "%");
                     ps.setString(11, "%" + ad.getRegion() + "%");
-                    ps.setString(12, "%" + ad.getRegion() + "%");
-                    ps.setString(13, "%" + ad.getCity() + "%");
+                    ps.setString(12, "%" + ad.getCity() + "%");
                 },
                 (rs, rowNum) -> new AdWithGeoDataModel(rs)
         );

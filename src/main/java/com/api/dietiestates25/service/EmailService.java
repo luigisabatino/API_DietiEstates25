@@ -1,14 +1,10 @@
 package com.api.dietiestates25.service;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.api.dietiestates25.model.UserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -35,32 +31,27 @@ public class EmailService {
 
     private final AmazonSimpleEmailService emailClient;
 
-    public EmailService(AmazonSimpleEmailService _emailClient,
+    public EmailService(AmazonSimpleEmailService emailClient,
                         @Value("${aws.access.key}") String awsAccessKey,
                         @Value("${aws.secret.key}") String awsSecretKey,
                         @Value("${aws.region}") String awsRegion,
                         @Value("${email.sender}") String fromAddress) {
-        this.emailClient = _emailClient;
+        this.emailClient = emailClient;
         this.awsAccessKey = awsAccessKey;
         this.awsSecretKey = awsSecretKey;
         this.awsRegion = awsRegion;
         this.fromAddress = fromAddress;
     }
 
-    private boolean sendEmail(String _toAddress, String _subject, String _body) {
-        toAddress = _toAddress;
-        subject = _subject;
-        body = _body;
+    private boolean sendEmail(String toAddress, String subject, String body) {
+        this.toAddress = toAddress;
+        this.subject = subject;
+        this.body = body;
         return sendEmail();
     }
 
     private boolean sendEmail() {
         try {
-            BasicAWSCredentials awsCredentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
-        /*AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                .withRegion(this.awsRegion)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();*/
             SendEmailRequest request = new SendEmailRequest()
                     .withSource(fromAddress)
                     .withDestination(new Destination().withToAddresses(toAddress))
@@ -68,7 +59,7 @@ public class EmailService {
                             .withSubject(new Content().withData(subject))
                             .withBody(new Body()
                                     .withHtml(new Content().withData(body))
-                                    .withText(new Content().withData("Please view this email in a web browser."))  // Se HTML fallisce
+                                    .withText(new Content().withData("Please view this email in a web browser."))
                             ));
             emailClient.sendEmail(request);
             return true;
@@ -90,8 +81,8 @@ public class EmailService {
                     user.getEmail(),
                     "DietiEstates Account Verification",
                     (usertype=='U') ?
-                            templateOTP(user.getFirstName(), user.getOtp(), OtpKey.CreateUser)
-                            : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),((usertype=='A')?"Agent":"Manager"))
+                            templateOTP(user.getFirstName(), user.getOtp(), OtpKey.CREATE_USER)
+                            : templateActivationEmailTempPwd(user.getFirstName(), user.getOtp(),((usertype=='A') ? "Agent" : "Manager"))
             );
         } catch (Exception ex) {
             return false;
@@ -101,17 +92,16 @@ public class EmailService {
         try {
             return sendEmail(
                     user.getEmail(),
-                    "DietiEstates " + (key.equals(OtpKey.ChangePwd) ? "Password Change" : "Account Verification"),
+                    "DietiEstates " + (key.equals(OtpKey.CHANGE_PWD) ? "Password Change" : "Account Verification"),
                     templateOTP("", user.getOtp(), key));
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             return false;
         }
     }
     private String templateOTP(String name, String otp, OtpKey key) throws IOException {
         return new String(Objects.requireNonNull(getClass().getResourceAsStream("/emailTemplates/otp.html"))
                 .readAllBytes(), StandardCharsets.UTF_8)
-                .replace("${name}", key.equals(OtpKey.ChangePwd) ? "" : name)
+                .replace("${name}", key.equals(OtpKey.CHANGE_PWD) ? "" : name)
                 .replace("${otp}", otp)
                 .replace("${message}", getMessageFromOtpKey(key));
     }
@@ -123,13 +113,13 @@ public class EmailService {
                 .replace("${usertype}", usertype);
     }
     public enum OtpKey {
-        ChangePwd,
-        CreateUser
+        CHANGE_PWD,
+        CREATE_USER
     }
     private String getMessageFromOtpKey(OtpKey key) {
         return switch (key) {
-            case ChangePwd -> "Please use this OTP to complete your password change.";
-            case CreateUser -> "Thank you for creating your DietiEstates account.";
+            case CHANGE_PWD -> "Please use this OTP to complete your password change.";
+            case CREATE_USER -> "Thank you for creating your DietiEstates account.";
         };
     }
 }

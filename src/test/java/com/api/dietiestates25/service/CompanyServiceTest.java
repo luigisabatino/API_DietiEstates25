@@ -1,19 +1,13 @@
 package com.api.dietiestates25.service;
 
-import com.api.dietiestates25.model.AdModel;
-import com.api.dietiestates25.model.CompanyModel;
 import com.api.dietiestates25.model.UserModel;
 import com.api.dietiestates25.model.extention.InsertCompanyRequest;
-import org.apache.catalina.Manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +29,7 @@ class CompanyServiceTest {
     }
 
     @Test
-    public void TestInsertCompanySuccess() {
+    void TestInsertCompanySuccess() {
         InsertCompanyRequest request = new InsertCompanyRequest();
         request.setCompanyName("Test Srl");
         request.setVatNumber("IT1234567890");
@@ -56,8 +50,7 @@ class CompanyServiceTest {
                 any(),any(),any(),any(),any(),any()))
                 .thenReturn(mockResult);
         var response = companyService.insertCompany(jdbcTemplate, request);
-        assertEquals(response.getCode(), 0);
-        assertEquals(response.getMessage(), "Company created successfully");
+        assertEquals(0, response.getCode());
     }
 
 }

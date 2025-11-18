@@ -19,8 +19,6 @@ class EmailServiceTest {
     void setUp() {
         emailClient = mock(AmazonSimpleEmailService.class);
         emailService = new EmailService(emailClient, "1234", "789654", "eu-west-1", "test@mail.it");
-
-        // Imposta i campi con ReflectionTestUtils
         org.springframework.test.util.ReflectionTestUtils.setField(emailService, "awsAccessKey", "access");
         org.springframework.test.util.ReflectionTestUtils.setField(emailService, "awsSecretKey", "secret");
         org.springframework.test.util.ReflectionTestUtils.setField(emailService, "awsRegion", "eu-west-1");

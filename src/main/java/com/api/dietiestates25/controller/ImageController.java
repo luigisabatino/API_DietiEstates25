@@ -1,13 +1,9 @@
 package com.api.dietiestates25.controller;
 
 import com.api.dietiestates25.model.dto.ImageDTO;
-import com.api.dietiestates25.service.CompanyService;
-import com.api.dietiestates25.service.EmailService;
-import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

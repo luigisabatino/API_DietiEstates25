@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
@@ -62,12 +61,13 @@ class InsertAdTest {
         when(apiService.coordinatesFromAddress(any())).thenReturn(osRet);
         when(apiService.placesInterestNearby(any())).thenReturn(geoRet);
         when(cityService.getCityNameByCode(any(),any())).thenReturn("cityName");
-        when(adService.insertAd(any(), any(),any())).thenReturn(0);
+        when(adService.insertAd(any(), any(),any())).thenReturn(1);
+        when(adService.getAdById(any(),anyInt())).thenReturn(null);
         mockMvc.perform(post("/insertAd")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
                         .header("sessionId", "sessionIdTest"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
     @Test
     void testInsertAd_RequiredParameterExceptionInCoordinatesFromAddress() throws Exception {
@@ -112,5 +112,16 @@ class InsertAdTest {
                         .content(objectMapper.writeValueAsString(dto))
                         .header("sessionId", "sessionIdTest"))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    void testInsertAd_InterruptedException() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(adController).build();
+        InsertAdDTO dto = new InsertAdDTO();
+        when(apiService.coordinatesFromAddress(any())).thenThrow(new InterruptedException());
+        mockMvc.perform(post("/insertAd")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header("sessionId", "sessionIdTest"))
+                .andExpect(status().isInternalServerError());
     }
 }

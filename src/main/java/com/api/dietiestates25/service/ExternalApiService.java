@@ -4,17 +4,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-
 import com.api.dietiestates25.model.response.GeoapifyResponse;
 import com.api.dietiestates25.model.response.OpenstreetResponse;
 import com.api.dietiestates25.throwable.RequiredParameterException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.api.dietiestates25.model.response.CodeResponse;
 
 @Component
 public class ExternalApiService {
@@ -36,8 +32,8 @@ public class ExternalApiService {
 
     private final HttpClient httpClient;
 
-    public ExternalApiService(HttpClient _httpClient) {
-        httpClient = _httpClient;
+    public ExternalApiService(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public int verifyVatNumber(String vatNumber) throws java.io.IOException, InterruptedException {
@@ -61,9 +57,9 @@ public class ExternalApiService {
             throw new RequiredParameterException("coordinates");
 
         String requestUrl = geoUrl
-                .replaceAll("CTEGORIES", geoCategories)
-                .replaceAll("COORDINATS", coordinates)
-                .replaceAll("RDIUS", geoRadius);
+                .replace("CTEGORIES", geoCategories)
+                .replace("COORDINATS", coordinates)
+                .replace("RDIUS", geoRadius);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(requestUrl))
@@ -79,7 +75,7 @@ public class ExternalApiService {
         if (address == null || address.isBlank())
             throw new RequiredParameterException("address");
 
-        address = address.replaceAll(" ", "+");
+        address = address.replace(" ", "+");
         String requestUrl = openstreetUrl + "q=" + address + "&format=json";
 
         HttpRequest request = HttpRequest.newBuilder()

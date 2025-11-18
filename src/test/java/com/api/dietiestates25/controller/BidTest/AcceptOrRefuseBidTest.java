@@ -2,7 +2,6 @@ package com.api.dietiestates25.controller.BidTest;
 
 import com.api.dietiestates25.controller.BidController;
 import com.api.dietiestates25.model.dto.bid.AcceptOrRefuseBidDTO;
-import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import com.api.dietiestates25.service.BidService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;

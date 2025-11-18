@@ -15,7 +15,7 @@ public class CityModel {
     public CityModel() { }
     public CityModel(ResultSet rs) {
         try {
-            name = rs.getString("name").replaceAll("£","'");
+            name = rs.getString("name").replace("£","'");
             code = rs.getString("istat_code");
         }
         catch(SQLException ex) {

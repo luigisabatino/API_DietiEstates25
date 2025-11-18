@@ -1,9 +1,7 @@
 package com.api.dietiestates25.controller.BidTest;
 
 import com.api.dietiestates25.controller.BidController;
-import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
 import com.api.dietiestates25.service.BidService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

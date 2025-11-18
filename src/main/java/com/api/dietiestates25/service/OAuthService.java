@@ -3,14 +3,9 @@ package com.api.dietiestates25.service;
 import com.api.dietiestates25.model.UserModel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,13 +25,19 @@ public class OAuthService {
     private String googleTokenUri;
     @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String googleUserInfoUri;
+
+    private final HttpClient client;
+
+    public OAuthService(HttpClient httpClient) {
+        this.client = ((httpClient != null) ? httpClient : HttpClient.newHttpClient());
+    }
+
     public String getToken(String code) throws IOException, InterruptedException {
         String requestBody = "code=" + code
                 + "&client_id=" + googleClientId
                 + "&client_secret=" + googleClientSecret
                 + "&redirect_uri=" + googleRedirectUri
                 + "&grant_type=authorization_code";
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(googleTokenUri))
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -46,8 +47,7 @@ public class OAuthService {
         if (response.statusCode() == 200) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(response.body());
-            String accessToken = jsonNode.get("access_token").asText();
-            return accessToken;
+            return (jsonNode.get("access_token").asText());
         }
         return null;
     }
@@ -57,7 +57,6 @@ public class OAuthService {
                 .header("Authorization", "Bearer " + token)
                 .GET()
                 .build();
-        HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> userInfoResponse = client.send(userInfoRequest, HttpResponse.BodyHandlers.ofString());
         if (userInfoResponse.statusCode() == 200) {
             ObjectMapper mapper = new ObjectMapper();

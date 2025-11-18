@@ -1,7 +1,6 @@
 package com.api.dietiestates25.controller.AdTest;
 
 import com.api.dietiestates25.controller.AdController;
-import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.extention.AdWithGeoDataModel;
 import com.api.dietiestates25.model.extention.SearchAdRequest;
 import com.api.dietiestates25.service.AdService;
@@ -52,9 +51,6 @@ class SearchAdTest {
         mockMvc = MockMvcBuilders.standaloneSetup(adController).build();
         SearchAdRequest dto = new SearchAdRequest();
         dto.setType(null);
-        AdModel adElement = new AdModel();
-        List<AdModel> ads = new ArrayList<AdModel>();
-        ads.add(adElement);
         when(adService.searchAd(any(), any())).thenThrow(new RequiredParameterException("ad type"));
         mockMvc.perform(put("/searchAd")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,9 +63,6 @@ class SearchAdTest {
         mockMvc = MockMvcBuilders.standaloneSetup(adController).build();
         SearchAdRequest dto = new SearchAdRequest();
         dto.setType("");
-        AdModel adElement = new AdModel();
-        List<AdModel> ads = new ArrayList<AdModel>();
-        ads.add(adElement);
         when(adService.searchAd(any(), any())).thenThrow(new RequiredParameterException("ad type"));
         mockMvc.perform(put("/searchAd")
                         .contentType(MediaType.APPLICATION_JSON)

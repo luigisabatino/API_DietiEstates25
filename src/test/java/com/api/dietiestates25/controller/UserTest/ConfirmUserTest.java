@@ -2,7 +2,6 @@ package com.api.dietiestates25.controller.UserTest;
 
 import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.model.dto.user.ConfirmUserDTO;
-import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;

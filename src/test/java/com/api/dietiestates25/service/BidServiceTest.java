@@ -1,23 +1,20 @@
 package com.api.dietiestates25.service;
 
-import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.BidModel;
 import com.api.dietiestates25.model.CounterOfferModel;
-import com.api.dietiestates25.model.extention.AdWithGeoDataModel;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
-import com.api.dietiestates25.model.extention.SearchAdRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +38,7 @@ class BidServiceTest {
     }
 
     @Test
-    public void TestInsertBidSuccess() {
+    void TestInsertBidSuccess() {
         when(jdbcTemplate.queryForObject(eq("SELECT insert_bid(?::VARCHAR, ?::INTEGER, ?::NUMERIC, ?::VARCHAR, ?::VARCHAR);"),eq(Integer.class),
                 any(), any(),any(), any(), any()))
                 .thenReturn(0);
@@ -49,7 +46,7 @@ class BidServiceTest {
         assertEquals(0, response);
     }
     @Test
-    public void TestCancelBidSuccess() {
+    void TestCancelBidSuccess() {
         when(jdbcTemplate.queryForObject(eq("SELECT * FROM CANCEL_BID(?, ?)"),eq(Integer.class),
                 any(), any()))
                 .thenReturn(0);
@@ -57,7 +54,7 @@ class BidServiceTest {
         assertEquals(0, response);
     }
     @Test
-    public void TestAcceptOrRefuseBidSuccess() {
+    void TestAcceptOrRefuseBidSuccess() {
         bid.setStatus("A");
         when(jdbcTemplate.queryForObject(eq("SELECT accept_refuse_bid(?::VARCHAR, ?::INTEGER, ?::VARCHAR, ?::NUMERIC, ?::VARCHAR)"), eq(Integer.class),
                 any(), any(), any(), any(), any()))
@@ -66,7 +63,7 @@ class BidServiceTest {
         assertEquals(0, response);
     }
     @Test
-    public void TestCancelCounterofferSuccess() {
+    void TestCancelCounterofferSuccess() {
         when(jdbcTemplate.queryForObject(eq("SELECT * FROM CANCEL_Counteroffer(?, ?)"),eq(Integer.class),
                 any(), any()))
                 .thenReturn(0);
@@ -74,7 +71,7 @@ class BidServiceTest {
         assertEquals(0, response);
     }
     @Test
-    public void TestAcceptOrRefuseCounterofferSuccess() {
+    void TestAcceptOrRefuseCounterofferSuccess() {
         CounterOfferModel co = new CounterOfferModel();
         co.setId(1);
         co.setAmount(45000);
@@ -87,38 +84,39 @@ class BidServiceTest {
         assertEquals(0, response);
     }
     @Test
-    public void TestGetBidsByAdSuccess() {
+    void TestGetBidsByAdSuccess() {
         var bidCo = new BidWithCounterofferModel();
+
         when(jdbcTemplate.query(
                 eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE ad = ?"),
-                any(Object[].class),
+                any(PreparedStatementSetter.class),   // <--- qui
                 any(RowMapper.class)
         )).thenReturn(List.of(bidCo));
-        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.ad, "1");
+
+        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.AD, "1");
         assertEquals(1, response.size());
     }
     @Test
-    public void TestGetBidsByBidIdSuccess() {
+    void TestGetBidsByBidIdSuccess() {
         var bidCo = new BidWithCounterofferModel();
         when(jdbcTemplate.queryForObject(
                 eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE B.bid_id = ?"),
                 any(RowMapper.class),
                 eq(1)
         )).thenReturn(bidCo);
-        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.bid_id, "1");
+        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.BID_ID, "1");
         assertEquals(1, response.size());
     }
     @Test
-    public void TestGetBidsByOffererSuccess() {
+    void TestGetBidsByOffererSuccess() {
         var bidCo = new BidWithCounterofferModel();
         when(jdbcTemplate.query(
                 eq("SELECT * FROM BIDS_WITH_COUNTEROFFER WHERE offerer = ?"),
-                any(Object[].class),
+                any(PreparedStatementSetter.class),  // <--- tipo corretto
                 any(RowMapper.class)
         )).thenReturn(List.of(bidCo));
-        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.offerer, "test@example.com");
+        var response = bidService.getBids(jdbcTemplate, BidService.BidsKey.OFFERER, "test@example.com");
         assertEquals(1, response.size());
     }
-
 
 }

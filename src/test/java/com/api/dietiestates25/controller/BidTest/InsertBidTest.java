@@ -1,13 +1,8 @@
 package com.api.dietiestates25.controller.BidTest;
 
 import com.api.dietiestates25.controller.BidController;
-import com.api.dietiestates25.model.dto.ad.InsertAdDTO;
 import com.api.dietiestates25.model.dto.bid.InsertBidDTO;
-import com.api.dietiestates25.model.response.GeoapifyResponse;
-import com.api.dietiestates25.model.response.OpenstreetResponse;
 import com.api.dietiestates25.service.BidService;
-import com.api.dietiestates25.service.CityService;
-import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.throwable.RequiredParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -18,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.util.ArrayList;
-import java.util.List;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

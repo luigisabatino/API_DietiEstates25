@@ -3,7 +3,6 @@ package com.api.dietiestates25.controller.UserTest;
 import com.api.dietiestates25.controller.UserController;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,13 +27,12 @@ class GenerateOtpTest {
     private EmailService emailService;
     @InjectMocks
     private UserController userController;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void testGenerateOtp_Success() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
         var email = "test@mail.it";
-        EmailService.OtpKey key = EmailService.OtpKey.ChangePwd;
+        EmailService.OtpKey key = EmailService.OtpKey.CHANGE_PWD;
         when(userService.insertOtp(any(), any())).thenReturn(true);
         when(emailService.sendOtpEmail(
                 argThat(user -> user != null && Objects.equals(user.getEmail(), email)),

@@ -6,7 +6,6 @@ import com.api.dietiestates25.model.dto.user.LoginDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.security.SecureRandom;
 import java.sql.ResultSet;
@@ -28,7 +27,6 @@ public class UserModel {
     public UserModel() { }
     public UserModel(ResultSet rs) throws SQLException {
         email = rs.getString("email");
-        //pwd = rs.getString("pwd");
         firstName = rs.getString("firstName");
         lastName = rs.getString("lastName");
         company = rs.getString("company");
@@ -67,8 +65,8 @@ public class UserModel {
     }
     public void setOtp() {
         SecureRandom random = new SecureRandom();
-        int _otp = 100000 + random.nextInt(900000);
-        otp = String.valueOf(_otp);
+        int tmpOtp = 100000 + random.nextInt(900000);
+        otp = String.valueOf(tmpOtp);
     }
     public void encodePwd() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

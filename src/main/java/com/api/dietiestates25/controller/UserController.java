@@ -10,12 +10,8 @@ import com.api.dietiestates25.model.dto.DetailEntityDTO;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.OAuthService;
 import com.api.dietiestates25.service.UserService;
-import com.api.dietiestates25.throwable.NoMatchCredentialsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -158,7 +154,12 @@ public class UserController {
                 response.addInEntities(userService.getUserByEmail(jdbcTemplate, user.getEmail()));
             }
             return response.toHttpEntitiesResponse();
-        } catch (Exception ex) {
+        }
+        catch(InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            return response.toHttpEntitiesResponse(ie);
+        }
+        catch (Exception ex) {
             return response.toHttpEntitiesResponse(ex);
         }
     }

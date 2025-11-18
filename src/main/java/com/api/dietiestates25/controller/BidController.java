@@ -98,7 +98,7 @@ public class BidController {
     @GetMapping("/getBids")
     public ResponseEntity<DetailEntityDTO<BidWithCounterofferModel>> getBids(@RequestParam BidService.BidsKey key, @RequestParam String value)
     {
-        CodeEntitiesResponse<BidWithCounterofferModel> response = new CodeEntitiesResponse<BidWithCounterofferModel>();
+        CodeEntitiesResponse<BidWithCounterofferModel> response = new CodeEntitiesResponse<>();
         try {
             response.setEntities(bidService.getBids(jdbcTemplate, key, value));
             return response.toHttpEntitiesResponse();

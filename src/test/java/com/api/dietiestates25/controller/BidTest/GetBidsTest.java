@@ -3,7 +3,6 @@ package com.api.dietiestates25.controller.BidTest;
 import com.api.dietiestates25.controller.BidController;
 import com.api.dietiestates25.model.extention.BidWithCounterofferModel;
 import com.api.dietiestates25.service.BidService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,21 +26,16 @@ class GetBidsTest {
     private BidService bidService;
     @InjectMocks
     private BidController bidController;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    /*
-            ad,
-        bid_id,
-        offerer;
-    */
+
     @Test
     void testGetBidsByAd_Success() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(bidController).build();
         BidWithCounterofferModel bidElement = new BidWithCounterofferModel();
         List<BidWithCounterofferModel> bids = new ArrayList<BidWithCounterofferModel>();
         bids.add(bidElement);
-        when(bidService.getBids(any(), eq(BidService.BidsKey.ad), any())).thenReturn(bids);
+        when(bidService.getBids(any(), eq(BidService.BidsKey.AD), any())).thenReturn(bids);
         mockMvc.perform(get("/getBids")
-                        .param("key", BidService.BidsKey.ad.name())
+                        .param("key", BidService.BidsKey.AD.name())
                         .param("value", "123"))
                 .andExpect(status().isOk());
     }
@@ -51,9 +45,9 @@ class GetBidsTest {
         BidWithCounterofferModel bidElement = new BidWithCounterofferModel();
         List<BidWithCounterofferModel> bids = new ArrayList<BidWithCounterofferModel>();
         bids.add(bidElement);
-        when(bidService.getBids(any(), eq(BidService.BidsKey.bid_id), any())).thenReturn(bids);
+        when(bidService.getBids(any(), eq(BidService.BidsKey.BID_ID), any())).thenReturn(bids);
         mockMvc.perform(get("/getBids")
-                        .param("key", BidService.BidsKey.bid_id.name())
+                        .param("key", BidService.BidsKey.BID_ID.name())
                         .param("value", "123"))
                 .andExpect(status().isOk());
     }
@@ -63,9 +57,9 @@ class GetBidsTest {
         BidWithCounterofferModel bidElement = new BidWithCounterofferModel();
         List<BidWithCounterofferModel> bids = new ArrayList<BidWithCounterofferModel>();
         bids.add(bidElement);
-        when(bidService.getBids(any(), eq(BidService.BidsKey.offerer), any())).thenReturn(bids);
+        when(bidService.getBids(any(), eq(BidService.BidsKey.OFFERER), any())).thenReturn(bids);
         mockMvc.perform(get("/getBids")
-                        .param("key", BidService.BidsKey.offerer.name())
+                        .param("key", BidService.BidsKey.OFFERER.name())
                         .param("value", "test"))
                 .andExpect(status().isOk());
     }

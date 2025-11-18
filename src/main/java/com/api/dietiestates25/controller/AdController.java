@@ -12,7 +12,6 @@ import com.api.dietiestates25.service.AdService;
 import com.api.dietiestates25.service.CityService;
 import com.api.dietiestates25.service.ExternalApiService;
 import com.api.dietiestates25.service.ImageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -26,61 +25,65 @@ public class AdController {
     private final ExternalApiService apiService;
     private final AdService adService;
     private final CityService cityService;
-    public AdController(JdbcTemplate jdbcTemplate, ExternalApiService apiService, AdService adService, CityService cityService) {
+    private final ImageService imageService;
+
+    public AdController(JdbcTemplate jdbcTemplate, ExternalApiService apiService, AdService adService, CityService cityService, ImageService imageService) {
         this.jdbcTemplate = jdbcTemplate;
         this.apiService = apiService;
         this.adService = adService;
         this.cityService = cityService;
+        this.imageService = imageService;
     }
+
     @PostMapping("/insertAd")
-    public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto)
-    {
+    public ResponseEntity<DetailEntityDTO<AdModel>> insertAd(@RequestHeader String sessionId, @RequestBody InsertAdDTO dto) {
         var response = new CodeEntitiesResponse<AdModel>();
         try {
             AdModel ad = new AdModel(dto);
-            List<OpenstreetResponse> osResponse = apiService.coordinatesFromAddress( (dto.getAddress() + " " + (cityService.getCityNameByCode(jdbcTemplate, dto.getCity())) ));
-            if(osResponse.size() > 0) {
+            List<OpenstreetResponse> osResponse = apiService.coordinatesFromAddress(dto.getAddress() + " " + cityService.getCityNameByCode(jdbcTemplate, dto.getCity()));
+            if (!osResponse.isEmpty()) {
                 var osElement = osResponse.get(0);
                 ad.setCoordinates(osElement.getLat() + " ; " + osElement.getLon());
                 ad.valorizePlacesInterest(apiService.placesInterestNearby(osElement.getLon() + "," + osElement.getLat()));
             }
             response.setCode(adService.insertAd(jdbcTemplate, sessionId, ad));
-            if(response.getCode() > 0)
+            if (response.getCode() > 0)
                 response.addInEntities(adService.getAdById(jdbcTemplate, response.getCode()));
             return response.toHttpEntitiesResponse();
         }
-        catch(Exception ex)
-        {
+        catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            return response.toHttpEntitiesResponse(ie);
+        }
+        catch (Exception ex) {
             return response.toHttpEntitiesResponse(ex);
         }
+
     }
+
     @PutMapping("/searchAd")
-    public ResponseEntity<DetailEntityDTO<AdWithGeoDataModel>> searchAd(@RequestBody SearchAdRequest request)
-    {
+    public ResponseEntity<DetailEntityDTO<AdWithGeoDataModel>> searchAd(@RequestBody SearchAdRequest request) {
         var response = new CodeEntitiesResponse<AdWithGeoDataModel>();
         try {
             response.setEntities(adService.searchAd(jdbcTemplate, request));
             return response.toHttpEntitiesResponse();
         }
-        catch(Exception ex)
-        {
+        catch (Exception ex) {
             return response.toHttpEntitiesResponse(ex);
         }
     }
+
     @DeleteMapping("/deleteAd")
-    public ResponseEntity<String> deleteAd(@RequestHeader String sessionId, @RequestParam int id)
-    {
+    public ResponseEntity<String> deleteAd(@RequestHeader String sessionId, @RequestParam int id) {
         var response = new CodeResponse();
         try {
             response.setCode(adService.deleteAd(jdbcTemplate, sessionId, id));
-            if(response.getCode() == 0) {
-                ImageService imageService = new ImageService();
+            if (response.getCode() == 0) {
                 imageService.deleteImagesByPrefix(id + "_");
             }
             return response.toHttpMessageResponse();
         }
-        catch(Exception ex)
-        {
+        catch (Exception ex) {
             return response.toHttpMessageResponse(ex);
         }
     }

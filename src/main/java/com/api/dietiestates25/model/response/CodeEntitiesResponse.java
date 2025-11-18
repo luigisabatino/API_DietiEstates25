@@ -12,12 +12,12 @@ import org.springframework.http.ResponseEntity;
 public class CodeEntitiesResponse<T> extends CodeResponse {
     private List<T> entities;
     public CodeEntitiesResponse() {
-        entities = new ArrayList<T>();
+        entities = new ArrayList<>();
     }
     public CodeEntitiesResponse(CodeResponse cr) {
         this.setCode(cr.getCode());
         this.setMessage(cr.getMessage());
-        entities = new ArrayList<T>();
+        entities = new ArrayList<>();
     }
     public void addInEntities(T value) {
         entities.add(value);

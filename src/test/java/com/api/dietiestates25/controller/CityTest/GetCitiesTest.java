@@ -3,7 +3,6 @@ package com.api.dietiestates25.controller.CityTest;
 import com.api.dietiestates25.controller.CityController;
 import com.api.dietiestates25.model.CityModel;
 import com.api.dietiestates25.service.CityService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +24,6 @@ class GetCitiesTest {
     private CityService cityService;
     @InjectMocks
     private CityController cityController;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void testGetCities_Success() throws Exception {

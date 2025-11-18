@@ -8,6 +8,4 @@ import lombok.Setter;
 public class CompanyModel {
     private String vatNumber;
     private String companyName;
-
-    public CompanyModel(){}
 }

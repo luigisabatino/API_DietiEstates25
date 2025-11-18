@@ -2,14 +2,9 @@ package com.api.dietiestates25.service;
 
 import com.api.dietiestates25.model.response.GeoapifyResponse;
 import com.api.dietiestates25.model.response.OpenstreetResponse;
-import com.api.dietiestates25.throwable.RequiredParameterException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -37,7 +32,6 @@ class ExternalApiServiceTest {
 
     @Test
     void testVerifyVatNumber() throws Exception {
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
         HttpResponse<String> mockedResponse = Mockito.mock(HttpResponse.class);
 
         Mockito.when(mockedResponse.body()).thenReturn("{\"valid\":true}");
@@ -46,11 +40,47 @@ class ExternalApiServiceTest {
                         Mockito.<HttpResponse.BodyHandler<String>>any()))
                 .thenReturn(mockedResponse);
 
-        // Inject the mocked httpClient manually or via constructor if you refactor it
-        // service.setHttpClient(httpClient);
-
         int result = externalApiService.verifyVatNumber("IT12345678901");
         assertEquals(0, result);
+    }
+
+    @Test
+    void testPlacesInterestNearby_Success() throws Exception {
+        HttpResponse<String> mockedResponse = mock(HttpResponse.class);
+        String jsonResponse = """
+        {
+            "features": [
+                {
+                    "properties": {
+                        "categories": ["school"]
+                    }
+                }
+            ]
+        }
+        """;
+        when(mockedResponse.body()).thenReturn(jsonResponse);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(mockedResponse);
+
+        GeoapifyResponse response = externalApiService.placesInterestNearby("45.0,9.0");
+
+        assertEquals(1, response.getFeatures().size());
+    }
+
+    @Test
+    void testCoordinatesFromAddress_Success() throws Exception {
+        HttpResponse<String> mockedResponse = mock(HttpResponse.class);
+        String jsonResponse = "[{ \"display_name\": \"Test Address\", \"lat\": \"45.0\", \"lon\": \"9.0\" }]";
+
+        when(mockedResponse.body()).thenReturn(jsonResponse);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(mockedResponse);
+
+        List<OpenstreetResponse> response = externalApiService.coordinatesFromAddress("Test Address");
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals("Test Address", response.get(0).getDisplay_name());
     }
 
 

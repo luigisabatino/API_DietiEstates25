@@ -5,7 +5,6 @@ import com.api.dietiestates25.service.CompanyService;
 import com.api.dietiestates25.model.extention.InsertCompanyRequest;
 import com.api.dietiestates25.service.EmailService;
 import com.api.dietiestates25.service.ExternalApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +38,10 @@ public class CompanyController {
             if(response.getCode()==0)
                 emailService.sendConfirmAccountEmail(request.getManager(), 'M');
             return response.toHttpMessageResponse();
+        }
+        catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            return response.toHttpMessageResponse(ie);
         }
         catch(Exception ex)
         {

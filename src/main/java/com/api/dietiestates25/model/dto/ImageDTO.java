@@ -9,9 +9,9 @@ public class ImageDTO {
     private String fileName;
     private String base64Image;
 
-    public ImageDTO(String _fileName, String _base64Image) {
-        fileName = _fileName;
-        base64Image = _base64Image;
+    public ImageDTO(String fileName, String base64Image) {
+        this.fileName = fileName;
+        this.base64Image = base64Image;
     }
 
 }

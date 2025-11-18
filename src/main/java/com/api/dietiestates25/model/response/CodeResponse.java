@@ -21,8 +21,7 @@ public class CodeResponse  {
     public CodeResponse() {}
     protected void setMessageFromCode() {
         switch (code) {
-            case 0:
-            case -5:
+            case 0, -5:
                 message = "Operation successful.";
                 break;
             case -1:
@@ -58,17 +57,13 @@ public class CodeResponse  {
         switch (code) {
             case 0:
                 return HttpStatus.OK;
-            case -1:
-            case -2:
+            case -1, -2:
                 return HttpStatus.UNAUTHORIZED;
-            case -3:
-            case -4:
+            case -3, -4:
                 return HttpStatus.CONFLICT;
             case -5:
                 return HttpStatus.CREATED;
-            case -6:
-            case -97:
-            case -98:
+            case -6, -97, -98:
                 return HttpStatus.BAD_REQUEST;
             case -7:
                 return HttpStatus.CONTINUE;

@@ -1,6 +1,5 @@
 package com.api.dietiestates25.model.extention;
 
-import com.api.dietiestates25.model.AdModel;
 import com.api.dietiestates25.model.UserModel;
 import lombok.Getter;
 import lombok.Setter;
